@@ -1,9 +1,8 @@
 import { useFrame } from "@react-three/fiber";
-import { FC, useMemo, useReducer, useRef } from "react";
+import { FC, useMemo, useRef } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
-  Color,
   DataTexture,
   Points,
   ShaderMaterial,
