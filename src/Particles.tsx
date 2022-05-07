@@ -1,3 +1,4 @@
+import { useFrame } from "@react-three/fiber";
 import { FC, useMemo } from "react";
 import {
   BufferAttribute,
@@ -36,16 +37,21 @@ export const Particles: FC = () => {
         uniforms: {
           positions: { value: positions },
           pointSize: { value: 2 },
+          time: { value: 0 },
         },
 
         vertexShader: /*glsl*/ `
           uniform sampler2D positions;
           uniform float pointSize;
+          uniform float time;
 
           varying vec4 v_position;
 
           void main() {
               vec3 pos = texture2D(positions, position.xy).xyz;
+
+              pos.x = pos.x + time;
+
               gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
               gl_PointSize = pointSize;
 
@@ -58,7 +64,7 @@ export const Particles: FC = () => {
 
         void main()
         {
-          gl_FragColor = vec4(1., 0., 0., .25);
+          // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
           gl_FragColor = v_position;
         }`,
       }),
@@ -83,6 +89,10 @@ export const Particles: FC = () => {
 
     return geometry;
   }, []);
+
+  useFrame((_, dt) => {
+    renderMaterial.uniforms.time.value += dt;
+  });
 
   return <points material={renderMaterial} geometry={geometry}></points>;
 };
