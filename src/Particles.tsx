@@ -13,10 +13,10 @@ const useDataTexture = () =>
     const width = 1024;
     const height = 1024;
 
-    const size = width * height;
-    const data = new Uint8Array(4 * size);
+    const length = width * height;
+    const data = new Uint8Array(4 * length);
 
-    for (let i = 0; i < size; i++) {
+    for (let i = 0; i < length; i++) {
       const offset = i * 4;
 
       data[offset] = Math.random() * 256;
@@ -34,26 +34,26 @@ const useDataTexture = () =>
 export const Particles: FC = () => {
   const ref = useRef<Points>(null!);
 
-  const positions = useDataTexture();
+  const data = useDataTexture();
 
   const renderMaterial = useMemo(
     () =>
       new ShaderMaterial({
         uniforms: {
-          positions: { value: positions },
+          data: { value: data },
           pointSize: { value: 2 },
           time: { value: 0 },
         },
 
         vertexShader: /*glsl*/ `
-          uniform sampler2D positions;
+          uniform sampler2D data;
           uniform float pointSize;
           uniform float time;
 
           varying vec4 v_position;
 
           void main() {
-            vec4 data = texture2D(positions, position.xy);
+            vec4 data = texture2D(data, position.xy);
 
             vec3 pos = vec3(
               cos(time * data.x) * data.y * data.a,
