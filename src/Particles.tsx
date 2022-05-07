@@ -78,11 +78,12 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
           void main()
           {
             float depth = gl_FragCoord.z / gl_FragCoord.w;
-            gl_FragColor = vec4(1.0, 1.0, 1.0, 0.2);
+            gl_FragColor = vec4(10.0, 1.0, 1.0, 0.2);
           }
         `,
 
         transparent: true,
+        toneMapped: false,
       }),
     []
   );
