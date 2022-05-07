@@ -10,7 +10,7 @@ export const App: FC = () => (
 
     <OrbitControls />
 
-    <PerspectiveCamera position={[0, 0, 10]} makeDefault />
+    <PerspectiveCamera position={[0, 0, 5]} makeDefault />
 
     <Particles />
 

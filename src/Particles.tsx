@@ -1,15 +1,16 @@
 import { useFrame } from "@react-three/fiber";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useReducer, useRef } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
   Color,
   DataTexture,
+  Points,
   ShaderMaterial,
 } from "three";
 
-export const Particles: FC = () => {
-  const positions = useMemo(() => {
+const useDataTexture = () =>
+  useMemo(() => {
     const width = 1024;
     const height = 1024;
 
@@ -22,7 +23,7 @@ export const Particles: FC = () => {
       data[offset] = Math.random() * 256;
       data[offset + 1] = Math.random() * 256 - 128;
       data[offset + 2] = Math.random() * 256 - 128;
-      data[offset + 3] = 256;
+      data[offset + 3] = Math.random() * 256;
     }
 
     const texture = new DataTexture(data, width, height);
@@ -30,6 +31,11 @@ export const Particles: FC = () => {
 
     return texture;
   }, []);
+
+export const Particles: FC = () => {
+  const ref = useRef<Points>(null!);
+
+  const positions = useDataTexture();
 
   const renderMaterial = useMemo(
     () =>
@@ -48,9 +54,13 @@ export const Particles: FC = () => {
           varying vec4 v_position;
 
           void main() {
-              vec3 pos = texture2D(positions, position.xy).xyz;
+              vec4 data = texture2D(positions, position.xy);
 
-              pos.x = pos.x + time;
+              vec3 pos = vec3(
+                cos(time * data.x) * data.y * data.a,
+                sin(time * data.y) * data.a * data.y * data.x,
+                cos(time * data.z) * data.a * data.x
+              );
 
               gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
               gl_PointSize = pointSize;
@@ -92,7 +102,10 @@ export const Particles: FC = () => {
 
   useFrame((_, dt) => {
     renderMaterial.uniforms.time.value += dt;
+    ref.current.rotation.y += dt * 0.3;
   });
 
-  return <points material={renderMaterial} geometry={geometry}></points>;
+  return (
+    <points ref={ref} material={renderMaterial} geometry={geometry}></points>
+  );
 };
