@@ -42,17 +42,24 @@ export const Particles: FC = () => {
           uniform sampler2D positions;
           uniform float pointSize;
 
+          varying vec4 v_position;
+
           void main() {
               vec3 pos = texture2D(positions, position.xy).xyz;
               gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
               gl_PointSize = pointSize;
+
+              v_position = vec4(pos, 1.0);
           }
           `,
 
         fragmentShader: /*glsl*/ `
+        varying vec4 v_position;
+
         void main()
         {
           gl_FragColor = vec4(1., 0., 0., .25);
+          gl_FragColor = v_position;
         }`,
       }),
     []
