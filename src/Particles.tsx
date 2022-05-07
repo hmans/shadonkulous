@@ -3,7 +3,7 @@ import { plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
 
-const useRandomizedBuffer = (
+const useBuffer = (
   width: number,
   height: number,
   factory: () => [number, number, number]
@@ -29,19 +29,19 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const ref = useRef<Points>(null!);
 
-  const positions = useRandomizedBuffer(width, height, () => [
+  const positions = useBuffer(width, height, () => [
     Math.random() * 2 - 1,
     Math.random() * 2 - 1,
     Math.random() * 2 - 1,
   ]);
 
-  const velocities = useRandomizedBuffer(width, height, () => [
+  const velocities = useBuffer(width, height, () => [
     Math.random() * 10 - 5,
     Math.random() * 10 - 5,
     Math.random() * 10 - 5,
   ]);
 
-  const accelerations = useRandomizedBuffer(width, height, () => [0, -9.81, 0]);
+  const accelerations = useBuffer(width, height, () => [0, -9.81, 0]);
 
   const renderMaterial = useMemo(
     () =>
@@ -77,9 +77,12 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
 
           void main()
           {
-            gl_FragColor = v_position;
+            float depth = gl_FragCoord.z / gl_FragCoord.w;
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 0.2);
           }
         `,
+
+        transparent: true,
       }),
     []
   );
