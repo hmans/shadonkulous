@@ -8,11 +8,8 @@ import {
   ShaderMaterial,
 } from "three";
 
-const useDataTexture = () =>
+const useDataTexture = (width: number, height: number) =>
   useMemo(() => {
-    const width = 1024;
-    const height = 1024;
-
     const length = width * height;
     const data = new Uint8Array(4 * length);
 
@@ -31,35 +28,57 @@ const useDataTexture = () =>
     return texture;
   }, []);
 
-export const Particles: FC = () => {
+const useBuffer = (width: number, height: number) =>
+  useMemo(() => {
+    const a = new Float32Array(3 * width * height);
+    const l = width * height;
+
+    for (let i = 0; i < l; i++) {
+      const offset = i * 3;
+      a[offset + 0] = Math.random() * 2 - 1;
+      a[offset + 1] = Math.random() * 2 - 1;
+      a[offset + 2] = Math.random() * 2 - 1;
+    }
+
+    return a;
+  }, []);
+
+export const Particles: FC<{ width?: number; height?: number }> = ({
+  width = 1024,
+  height = 1024,
+}) => {
   const ref = useRef<Points>(null!);
 
-  const data = useDataTexture();
+  const positions = useDataTexture(width, height);
+
+  const velocities = useBuffer(width, height);
+  const accelerations = useBuffer(width, height);
 
   const renderMaterial = useMemo(
     () =>
       new ShaderMaterial({
         uniforms: {
-          data: { value: data },
+          positions: { value: positions },
           pointSize: { value: 2 },
           time: { value: 0 },
         },
 
         vertexShader: /*glsl*/ `
-          uniform sampler2D data;
+          uniform sampler2D positions;
           uniform float pointSize;
           uniform float time;
+
+          attribute vec3 velocity;
+          attribute vec3 acceleration;
 
           varying vec4 v_position;
 
           void main() {
-            vec4 data = texture2D(data, position.xy);
+            // vec4 position = texture2D(positions, position.xy).xyz;
 
-            vec3 pos = vec3(
-              cos(time * data.x) * data.y * data.a,
-              sin(time * data.y) * data.a * data.y * data.x,
-              cos(time * data.z) * data.a * data.x
-            );
+            vec3 acc = acceleration * 0.5 * time * time;
+            vec3 vel = velocity * time;
+            vec3 pos = acc + vel + position.xyz;
 
             gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             gl_PointSize = pointSize;
@@ -96,13 +115,17 @@ export const Particles: FC = () => {
 
     const geometry = new BufferGeometry();
     geometry.setAttribute("position", new BufferAttribute(vertices, 3));
-
+    geometry.setAttribute("velocity", new BufferAttribute(velocities, 3));
+    geometry.setAttribute(
+      "acceleration",
+      new BufferAttribute(accelerations, 3)
+    );
     return geometry;
   }, []);
 
   useFrame((_, dt) => {
     renderMaterial.uniforms.time.value += dt;
-    ref.current.rotation.y += dt * 0.3;
+    // ref.current.rotation.y += dt * 0.3;
   });
 
   return (
