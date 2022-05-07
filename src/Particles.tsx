@@ -20,8 +20,8 @@ const useDataTexture = () =>
       const offset = i * 4;
 
       data[offset] = Math.random() * 256;
-      data[offset + 1] = Math.random() * 256 - 128;
-      data[offset + 2] = Math.random() * 256 - 128;
+      data[offset + 1] = Math.random() * 256;
+      data[offset + 2] = Math.random() * 256;
       data[offset + 3] = Math.random() * 256;
     }
 
