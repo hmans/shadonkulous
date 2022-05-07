@@ -53,29 +53,30 @@ export const Particles: FC = () => {
           varying vec4 v_position;
 
           void main() {
-              vec4 data = texture2D(positions, position.xy);
+            vec4 data = texture2D(positions, position.xy);
 
-              vec3 pos = vec3(
-                cos(time * data.x) * data.y * data.a,
-                sin(time * data.y) * data.a * data.y * data.x,
-                cos(time * data.z) * data.a * data.x
-              );
+            vec3 pos = vec3(
+              cos(time * data.x) * data.y * data.a,
+              sin(time * data.y) * data.a * data.y * data.x,
+              cos(time * data.z) * data.a * data.x
+            );
 
-              gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-              gl_PointSize = pointSize;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = pointSize;
 
-              v_position = vec4(pos, 1.0);
+            v_position = vec4(pos, 1.0);
           }
           `,
 
         fragmentShader: /*glsl*/ `
-        varying vec4 v_position;
+          varying vec4 v_position;
 
-        void main()
-        {
-          // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-          gl_FragColor = v_position;
-        }`,
+          void main()
+          {
+            // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = v_position;
+          }
+        `,
       }),
     []
   );
