@@ -14,9 +14,9 @@ export const App: FC = () => (
 
     <Particles />
 
-    <mesh>
+    {/* <mesh>
       <dodecahedronBufferGeometry />
       <meshStandardMaterial color="#ccc" />
-    </mesh>
+    </mesh> */}
   </Canvas>
 );
