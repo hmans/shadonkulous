@@ -59,7 +59,7 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
       new ShaderMaterial({
         uniforms: {
           positions: { value: positions },
-          pointSize: { value: 2 },
+          pointSize: { value: 3 },
           time: { value: 0 },
         },
 
