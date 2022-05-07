@@ -30,15 +30,15 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
   const ref = useRef<Points>(null!);
 
   const positions = useRandomizedBuffer(width, height, () => [
-    plusMinus(1),
-    plusMinus(1),
-    plusMinus(1),
+    Math.random() * 2 - 1,
+    Math.random() * 2 - 1,
+    Math.random() * 2 - 1,
   ]);
 
   const velocities = useRandomizedBuffer(width, height, () => [
-    plusMinus(5),
-    plusMinus(5),
-    plusMinus(5),
+    Math.random() * 10 - 5,
+    Math.random() * 10 - 5,
+    Math.random() * 10 - 5,
   ]);
 
   const accelerations = useRandomizedBuffer(width, height, () => [0, -9.81, 0]);
