@@ -3,16 +3,21 @@ import { plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
 
-const useRandomizedBuffer = (width: number, height: number) =>
+const useRandomizedBuffer = (
+  width: number,
+  height: number,
+  factory: () => [number, number, number]
+) =>
   useMemo(() => {
     const a = new Float32Array(3 * width * height);
     const l = width * height;
 
     for (let i = 0; i < l; i++) {
       const offset = i * 3;
-      a[offset + 0] = plusMinus(1);
-      a[offset + 1] = plusMinus(1);
-      a[offset + 2] = plusMinus(1);
+      const r = factory();
+      a[offset + 0] = r[0];
+      a[offset + 1] = r[1];
+      a[offset + 2] = r[2];
     }
 
     return a;
@@ -24,9 +29,19 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const ref = useRef<Points>(null!);
 
-  const positions = useRandomizedBuffer(width, height);
-  const velocities = useRandomizedBuffer(width, height);
-  const accelerations = useRandomizedBuffer(width, height);
+  const positions = useRandomizedBuffer(width, height, () => [
+    plusMinus(1),
+    plusMinus(1),
+    plusMinus(1),
+  ]);
+
+  const velocities = useRandomizedBuffer(width, height, () => [
+    plusMinus(5),
+    plusMinus(5),
+    plusMinus(5),
+  ]);
+
+  const accelerations = useRandomizedBuffer(width, height, () => [0, -9.81, 0]);
 
   const renderMaterial = useMemo(
     () =>
@@ -53,7 +68,7 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
             gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
             gl_PointSize = pointSize;
 
-            v_position = vec4(pos, 1.0);
+            v_position = gl_Position;
           }
           `,
 
