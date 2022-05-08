@@ -3,51 +3,9 @@ import { Leva, useControls } from "leva";
 import { insideSphere, number, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
-
-const useBuffer = (count: number, factory: () => [number, number, number]) =>
-  useMemo(() => {
-    const a = new Float32Array(3 * count);
-    const l = count;
-
-    for (let i = 0; i < l; i++) {
-      const offset = i * 3;
-      const r = factory();
-      a[offset + 0] = r[0];
-      a[offset + 1] = r[1];
-      a[offset + 2] = r[2];
-    }
-
-    return a;
-  }, [count]);
-
-const vertexShader = /*glsl*/ `
-uniform float pointSize;
-uniform float time;
-
-attribute vec3 velocity;
-attribute vec3 acceleration;
-
-varying vec4 v_position;
-
-void main() {
-  vec3 acc = acceleration * 0.5 * time * time;
-  vec3 vel = velocity * time;
-  vec3 pos = acc + vel + position;
-
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-  gl_PointSize = pointSize;
-
-  v_position = gl_Position;
-}`;
-
-const fragmentShader = /*glsl*/ `
-varying vec4 v_position;
-
-void main()
-{
-  float depth = gl_FragCoord.z / gl_FragCoord.w;
-  gl_FragColor = vec4(10.0, 1.0, 1.0, 0.8);
-}`;
+import { useBuffer } from "./useBuffer";
+import fragmentShader from "./fragmentShader";
+import vertexShader from "./vertexShader";
 
 export const Particles: FC = () => {
   const { count } = useControls({
