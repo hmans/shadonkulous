@@ -36,11 +36,11 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
 
   const velocities = useBuffer(width, height, () => [
     Math.random() * 2 - 1,
-    Math.random() * 10 - 5,
+    Math.random() * 10,
     Math.random() * 2 - 1,
   ]);
 
-  const accelerations = useBuffer(width, height, () => [0, -9.81, 0]);
+  const accelerations = useBuffer(width, height, () => [0, -2, 0]);
 
   const renderMaterial = useMemo(
     () =>
