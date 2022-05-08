@@ -24,7 +24,11 @@ export const Particles: FC = () => {
     return [vel.x, Math.pow(Math.random(), 2) * 5, vel.z];
   });
 
-  const accelerations = useBuffer(count, () => [0, -5, 0]);
+  const accelerations = useBuffer(count, () => [
+    0 + plusMinus(1),
+    -5 + plusMinus(1),
+    plusMinus(1),
+  ]);
 
   const renderMaterial = useMemo(
     () =>
