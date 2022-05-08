@@ -3,9 +3,9 @@ import { useControls } from "leva";
 import { insideSphere, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
-import fragmentShader from "./fragmentShader";
+import fragmentShader from "./shaders/fragmentShader";
 import { useBuffer } from "./useBuffer";
-import vertexShader from "./vertexShader";
+import vertexShader from "./shaders/vertexShader";
 
 export const Particles: FC = () => {
   const { count, size } = useControls({
