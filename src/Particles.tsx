@@ -9,8 +9,8 @@ import vertexShader from "./shaders/vertexShader";
 
 export const Particles: FC = () => {
   const { count, size } = useControls({
-    count: { value: 1_000, min: 100, max: 1_000_000, step: 100 },
-    size: { value: 3, min: 1, max: 20 },
+    count: { value: 2_000, min: 100, max: 1_000_000, step: 100 },
+    size: { value: 4, min: 1, max: 20 },
   });
 
   const ref = useRef<Points>(null!);
