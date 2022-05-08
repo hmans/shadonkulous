@@ -3,14 +3,10 @@ import { insideSphere, number, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
 
-const useBuffer = (
-  width: number,
-  height: number,
-  factory: () => [number, number, number]
-) =>
+const useBuffer = (count: number, factory: () => [number, number, number]) =>
   useMemo(() => {
-    const a = new Float32Array(3 * width * height);
-    const l = width * height;
+    const a = new Float32Array(3 * count);
+    const l = count;
 
     for (let i = 0; i < l; i++) {
       const offset = i * 3;
@@ -52,23 +48,20 @@ void main()
   gl_FragColor = vec4(10.0, 1.0, 1.0, 0.8);
 }`;
 
-export const Particles: FC<{ width?: number; height?: number }> = ({
-  width = 1024,
-  height = 1024,
-}) => {
+export const Particles: FC<{ count?: number }> = ({ count = 1_000_000 }) => {
   const ref = useRef<Points>(null!);
 
-  const positions = useBuffer(width, height, () => {
+  const positions = useBuffer(count, () => {
     const pos = insideSphere();
     return [pos.x, pos.y, pos.z];
   });
 
-  const velocities = useBuffer(width, height, () => {
+  const velocities = useBuffer(count, () => {
     const vel = insideSphere();
     return [vel.x, Math.pow(Math.random(), 2) * 5, vel.z];
   });
 
-  const accelerations = useBuffer(width, height, () => [0, -1, 0]);
+  const accelerations = useBuffer(count, () => [0, -1, 0]);
 
   const renderMaterial = useMemo(
     () =>
