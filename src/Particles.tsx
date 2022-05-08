@@ -1,10 +1,10 @@
 import { useFrame } from "@react-three/fiber";
-import { Leva, useControls } from "leva";
-import { insideSphere, number, plusMinus } from "randomish";
+import { useControls } from "leva";
+import { insideSphere, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
-import { useBuffer } from "./useBuffer";
 import fragmentShader from "./fragmentShader";
+import { useBuffer } from "./useBuffer";
 import vertexShader from "./vertexShader";
 
 export const Particles: FC = () => {
