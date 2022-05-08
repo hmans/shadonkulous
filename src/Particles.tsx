@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { Leva, useControls } from "leva";
 import { insideSphere, number, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
@@ -17,7 +18,7 @@ const useBuffer = (count: number, factory: () => [number, number, number]) =>
     }
 
     return a;
-  }, []);
+  }, [count]);
 
 const vertexShader = /*glsl*/ `
 uniform float pointSize;
@@ -48,7 +49,11 @@ void main()
   gl_FragColor = vec4(10.0, 1.0, 1.0, 0.8);
 }`;
 
-export const Particles: FC<{ count?: number }> = ({ count = 1_000_000 }) => {
+export const Particles: FC = () => {
+  const { count } = useControls({
+    count: { value: 1_000, min: 1, max: 1_000_000 },
+  });
+
   const ref = useRef<Points>(null!);
 
   const positions = useBuffer(count, () => {
@@ -76,7 +81,7 @@ export const Particles: FC<{ count?: number }> = ({ count = 1_000_000 }) => {
         transparent: true,
         toneMapped: false,
       }),
-    []
+    [count]
   );
 
   const geometry = useMemo(() => {
@@ -90,7 +95,7 @@ export const Particles: FC<{ count?: number }> = ({ count = 1_000_000 }) => {
     );
 
     return geometry;
-  }, []);
+  }, [positions, velocities, accelerations]);
 
   useFrame((_, dt) => {
     renderMaterial.uniforms.time.value += dt;
