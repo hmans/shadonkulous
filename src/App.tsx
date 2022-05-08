@@ -14,7 +14,7 @@ export const App: FC = () => (
     <PerspectiveCamera position={[0, 0, 15]} makeDefault />
 
     <Particles />
-    <RenderPipeline />
+    {/* <RenderPipeline /> */}
 
     {/* <mesh>
       <dodecahedronBufferGeometry />
