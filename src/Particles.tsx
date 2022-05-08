@@ -51,7 +51,7 @@ void main()
 
 export const Particles: FC = () => {
   const { count } = useControls({
-    count: { value: 1_000, min: 1, max: 1_000_000 },
+    count: { value: 1_000, min: 100, max: 1_000_000, step: 100 },
   });
 
   const ref = useRef<Points>(null!);
@@ -66,7 +66,7 @@ export const Particles: FC = () => {
     return [vel.x, Math.pow(Math.random(), 2) * 5, vel.z];
   });
 
-  const accelerations = useBuffer(count, () => [0, -1, 0]);
+  const accelerations = useBuffer(count, () => [0, -5, 0]);
 
   const renderMaterial = useMemo(
     () =>
@@ -103,6 +103,11 @@ export const Particles: FC = () => {
   });
 
   return (
-    <points ref={ref} material={renderMaterial} geometry={geometry}></points>
+    <points
+      ref={ref}
+      material={renderMaterial}
+      geometry={geometry}
+      position-y={3}
+    ></points>
   );
 };
