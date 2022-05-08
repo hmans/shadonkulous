@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { number, plusMinus } from "randomish";
+import { insideSphere, number, plusMinus } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { BufferAttribute, BufferGeometry, Points, ShaderMaterial } from "three";
 
@@ -58,19 +58,17 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const ref = useRef<Points>(null!);
 
-  const positions = useBuffer(width, height, () => [
-    plusMinus(1),
-    plusMinus(1),
-    plusMinus(1),
-  ]);
+  const positions = useBuffer(width, height, () => {
+    const pos = insideSphere();
+    return [pos.x, pos.y, pos.z];
+  });
 
-  const velocities = useBuffer(width, height, () => [
-    plusMinus(1),
-    number(10),
-    plusMinus(1),
-  ]);
+  const velocities = useBuffer(width, height, () => {
+    const vel = insideSphere();
+    return [vel.x, Math.pow(Math.random(), 2) * 5, vel.z];
+  });
 
-  const accelerations = useBuffer(width, height, () => [0, -2, 0]);
+  const accelerations = useBuffer(width, height, () => [0, -1, 0]);
 
   const renderMaterial = useMemo(
     () =>
