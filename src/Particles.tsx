@@ -22,6 +22,35 @@ const useBuffer = (
     return a;
   }, []);
 
+const vertexShader = /*glsl*/ `
+uniform float pointSize;
+uniform float time;
+
+attribute vec3 velocity;
+attribute vec3 acceleration;
+
+varying vec4 v_position;
+
+void main() {
+  vec3 acc = acceleration * 0.5 * time * time;
+  vec3 vel = velocity * time;
+  vec3 pos = acc + vel + position;
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  gl_PointSize = pointSize;
+
+  v_position = gl_Position;
+}`;
+
+const fragmentShader = /*glsl*/ `
+varying vec4 v_position;
+
+void main()
+{
+  float depth = gl_FragCoord.z / gl_FragCoord.w;
+  gl_FragColor = vec4(10.0, 1.0, 1.0, 0.8);
+}`;
+
 export const Particles: FC<{ width?: number; height?: number }> = ({
   width = 1024,
   height = 1024,
@@ -50,37 +79,8 @@ export const Particles: FC<{ width?: number; height?: number }> = ({
           time: { value: 0 },
         },
 
-        vertexShader: /*glsl*/ `
-          uniform float pointSize;
-          uniform float time;
-
-          attribute vec3 velocity;
-          attribute vec3 acceleration;
-
-          varying vec4 v_position;
-
-          void main() {
-            vec3 acc = acceleration * 0.5 * time * time;
-            vec3 vel = velocity * time;
-            vec3 pos = acc + vel + position;
-
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-            gl_PointSize = pointSize;
-
-            v_position = gl_Position;
-          }
-          `,
-
-        fragmentShader: /*glsl*/ `
-          varying vec4 v_position;
-
-          void main()
-          {
-            float depth = gl_FragCoord.z / gl_FragCoord.w;
-            gl_FragColor = vec4(10.0, 1.0, 1.0, 0.8);
-          }
-        `,
-
+        vertexShader,
+        fragmentShader,
         transparent: true,
         toneMapped: false,
       }),
