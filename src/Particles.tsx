@@ -8,8 +8,9 @@ import fragmentShader from "./fragmentShader";
 import vertexShader from "./vertexShader";
 
 export const Particles: FC = () => {
-  const { count } = useControls({
+  const { count, size } = useControls({
     count: { value: 1_000, min: 100, max: 1_000_000, step: 100 },
+    size: { value: 3, min: 1, max: 20 },
   });
 
   const ref = useRef<Points>(null!);
@@ -34,16 +35,15 @@ export const Particles: FC = () => {
     () =>
       new ShaderMaterial({
         uniforms: {
-          pointSize: { value: 3 },
+          pointSize: { value: size },
           time: { value: 0 },
         },
 
         vertexShader,
         fragmentShader,
         transparent: true,
-        toneMapped: false,
       }),
-    [count]
+    [count, size]
   );
 
   const geometry = useMemo(() => {
