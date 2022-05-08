@@ -6,6 +6,7 @@ attribute vec3 velocity;
 attribute vec3 acceleration;
 
 varying vec4 v_position;
+varying vec3 v_uv;
 
 void main() {
   /* Start with the initial position */
@@ -21,4 +22,5 @@ void main() {
   gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   gl_PointSize = pointSize;
   v_position = gl_Position;
+  v_uv = position;
 }`;
