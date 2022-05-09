@@ -10,6 +10,7 @@ import {
   RGBFormat,
   ShaderMaterial,
 } from "three";
+import renderVertexShader from "./shaders/render.vert";
 
 const useNormalizedGeometry = (width = 1024, height = 1024) =>
   useMemo(() => {
@@ -58,6 +59,7 @@ const useParticleRenderMaterial = (positions: DataTexture) =>
   useMemo(
     () =>
       new ShaderMaterial({
+        vertexShader: renderVertexShader,
         uniforms: {
           positions: { value: positions },
         },
