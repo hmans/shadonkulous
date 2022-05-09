@@ -8,8 +8,8 @@ import {
   RGBFormat,
 } from "three";
 
-const useNormalizedGeometry = (width = 1024, height = 1024) => {
-  return useMemo(() => {
+const useNormalizedGeometry = (width = 1024, height = 1024) =>
+  useMemo(() => {
     const length = width * height;
 
     let vertices = new Float32Array(length * 3);
@@ -25,15 +25,9 @@ const useNormalizedGeometry = (width = 1024, height = 1024) => {
 
     return geometry;
   }, [width, height]);
-};
 
-export const FBOParticles: FC<{ width?: number; height?: number }> = ({
-  width = 1024,
-  height = 1024,
-}) => {
-  const geometry = useNormalizedGeometry(width, height);
-
-  const randomizedTexture = useMemo(() => {
+const usePositions = (width: number, height: number) =>
+  useMemo(() => {
     const l = width * height;
     const data = new Float32Array(l * 3);
 
@@ -55,7 +49,14 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     positions.needsUpdate = true;
 
     return positions;
-  }, []);
+  }, [width, height]);
+
+export const FBOParticles: FC<{ width?: number; height?: number }> = ({
+  width = 1024,
+  height = 1024,
+}) => {
+  const geometry = useNormalizedGeometry(width, height);
+  const positions = usePositions(width, height);
 
   return (
     <points geometry={geometry}>
