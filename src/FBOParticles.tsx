@@ -145,6 +145,7 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 
   useFrame(({ gl, scene, camera }, dt) => {
     gl.render(scene, camera);
+    gl.render(simulationScene, simulationCamera);
   }, 1);
 
   return (
