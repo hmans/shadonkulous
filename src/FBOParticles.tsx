@@ -1,11 +1,14 @@
+import { render } from "@testing-library/react";
 import { insideSphere } from "randomish";
 import { FC, useMemo } from "react";
 import {
+  AdditiveBlending,
   BufferAttribute,
   BufferGeometry,
   DataTexture,
   FloatType,
   RGBFormat,
+  ShaderMaterial,
 } from "three";
 
 const useNormalizedGeometry = (width = 1024, height = 1024) =>
@@ -51,16 +54,26 @@ const usePositions = (width: number, height: number) =>
     return positions;
   }, [width, height]);
 
+const useParticleRenderMaterial = (positions: DataTexture) =>
+  useMemo(
+    () =>
+      new ShaderMaterial({
+        uniforms: {
+          positions: { value: positions },
+        },
+        transparent: true,
+        blending: AdditiveBlending,
+      }),
+    []
+  );
+
 export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   width = 1024,
   height = 1024,
 }) => {
   const geometry = useNormalizedGeometry(width, height);
   const positions = usePositions(width, height);
+  const renderMaterial = useParticleRenderMaterial(positions);
 
-  return (
-    <points geometry={geometry}>
-      <meshBasicMaterial />
-    </points>
-  );
+  return <points geometry={geometry} material={renderMaterial} />;
 };
