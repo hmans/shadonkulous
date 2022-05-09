@@ -13,6 +13,7 @@ import {
 } from "three";
 import renderVertexShader from "./shaders/render.vert";
 import renderFragmentShader from "./shaders/render.frag";
+import { useFrame } from "@react-three/fiber";
 
 const useNormalizedGeometry = (width: number, height: number) =>
   useMemo(() => {
@@ -79,8 +80,11 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const geometry = useNormalizedGeometry(width, height);
   const positions = usePositions(width, height);
-  console.log(positions);
   const renderMaterial = useParticleRenderMaterial(positions);
+
+  useFrame((_, dt) => {
+    // renderMaterial.uniforms.u_time.value += dt;
+  });
 
   return (
     <>
