@@ -72,6 +72,7 @@ const useParticleSimulationMaterial = (positions: DataTexture) =>
         fragmentShader: simulationFragmentShader,
         uniforms: {
           u_positions: { value: positions },
+          u_time: { value: 0.0 },
         },
         transparent: true,
         blending: AdditiveBlending,
@@ -152,6 +153,8 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     }, [positions]);
 
   useFrame(({ gl, scene, camera }, dt) => {
+    simulationMaterial.uniforms.u_time.value += dt;
+
     gl.setRenderTarget(simulationRenderTarget);
     gl.clear();
     gl.render(simulationScene, simulationCamera);
