@@ -1,8 +1,13 @@
 export default /*glsl*/ `
 
+uniform sampler2D u_positions;
+
+varying vec2 v_uv;
+
 void main()
 {
-  gl_FragColor = vec4(1.0, 1.0, 0.5, 1.0);
+  vec3 position = texture2D(u_positions, v_uv).rgb;
+  gl_FragColor = vec4(position, 1.0);
 }
 
 `;
