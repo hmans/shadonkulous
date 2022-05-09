@@ -1,5 +1,12 @@
+import { insideSphere } from "randomish";
 import { FC, useMemo } from "react";
-import { BufferAttribute, BufferGeometry } from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  DataTexture,
+  FloatType,
+  RGBFormat,
+} from "three";
 
 const useNormalizedGeometry = (width = 1024, height = 1024) => {
   return useMemo(() => {
@@ -20,8 +27,35 @@ const useNormalizedGeometry = (width = 1024, height = 1024) => {
   }, [width, height]);
 };
 
-export const FBOParticles: FC = () => {
-  const geometry = useNormalizedGeometry();
+export const FBOParticles: FC<{ width?: number; height?: number }> = ({
+  width = 1024,
+  height = 1024,
+}) => {
+  const geometry = useNormalizedGeometry(width, height);
+
+  const randomizedTexture = useMemo(() => {
+    const l = width * height;
+    const data = new Float32Array(l * 3);
+
+    for (let i = 0; i < l; i++) {
+      const offset = i * 3;
+      const point = insideSphere();
+      data[offset + 0] = point.x;
+      data[offset + 1] = point.y;
+      data[offset + 2] = point.z;
+    }
+
+    const positions = new DataTexture(
+      data,
+      width,
+      height,
+      RGBFormat,
+      FloatType
+    );
+    positions.needsUpdate = true;
+
+    return positions;
+  }, []);
 
   return (
     <points geometry={geometry}>
