@@ -1,6 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { insideSphere } from "randomish";
-import { FC, useMemo } from "react";
+import { FC, useMemo, useRef } from "react";
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -10,6 +10,7 @@ import {
   Mesh,
   NearestFilter,
   OrthographicCamera,
+  Points,
   RGBAFormat,
   Scene,
   ShaderMaterial,
@@ -104,7 +105,7 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   const renderMaterial = useParticleRenderMaterial(positions);
   const simulationMaterial = useParticleSimulationMaterial(positions);
 
-  const [simulationScene, simulationCamera, simulationRenderTarget] =
+  const [simulationScene, simulationCamera, simulationRenderTargets] =
     useMemo(() => {
       const scene = new Scene();
       const camera = new OrthographicCamera(
@@ -115,12 +116,21 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
         1 / Math.pow(2, 53),
         1
       );
-      const renderTarget = new WebGLRenderTarget(width, height, {
-        minFilter: NearestFilter,
-        magFilter: NearestFilter,
-        format: RGBAFormat,
-        type: FloatType,
-      });
+
+      const renderTargets = [
+        new WebGLRenderTarget(width, height, {
+          minFilter: NearestFilter,
+          magFilter: NearestFilter,
+          format: RGBAFormat,
+          type: FloatType,
+        }),
+        new WebGLRenderTarget(width, height, {
+          minFilter: NearestFilter,
+          magFilter: NearestFilter,
+          format: RGBAFormat,
+          type: FloatType,
+        }),
+      ];
 
       const geometry = new BufferGeometry();
       geometry.setAttribute(
@@ -149,25 +159,35 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 
       scene.add(new Mesh(geometry, simulationMaterial));
 
-      return [scene, camera, renderTarget];
+      return [scene, camera, renderTargets];
     }, [positions]);
+
+  const points = useRef<Points>(null!);
+
+  let active = 0;
 
   useFrame(({ gl, scene, camera }, dt) => {
     simulationMaterial.uniforms.u_time.value += dt;
 
-    gl.setRenderTarget(simulationRenderTarget);
+    gl.setRenderTarget(simulationRenderTargets[active]);
     gl.clear();
     gl.render(simulationScene, simulationCamera);
     gl.setRenderTarget(null);
 
-    renderMaterial.uniforms.u_positions.value = simulationRenderTarget.texture;
+    renderMaterial.uniforms.u_positions.value =
+      simulationRenderTargets[active].texture;
 
     gl.render(scene, camera);
+
+    // simulationMaterial.uniforms.u_positions.value =
+    //   simulationRenderTargets[(active + 1) % 2].texture;
+
+    active = (active + 1) % 2;
   }, 1);
 
   return (
     <>
-      <points geometry={geometry} material={renderMaterial} />
+      <points ref={points} geometry={geometry} material={renderMaterial} />
       <mesh>
         <boxGeometry args={[0.1, 0.1, 0.1]} />
         <meshStandardMaterial color="#ccc" />

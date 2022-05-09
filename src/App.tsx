@@ -5,7 +5,7 @@ import { FBOParticles } from "./FBOParticles";
 
 export const App: FC = () => (
   <>
-    <Canvas flat>
+    <Canvas flat gl={{ preserveDrawingBuffer: true }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 10]} intensity={1} />
 
