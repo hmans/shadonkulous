@@ -103,49 +103,63 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   const renderMaterial = useParticleRenderMaterial(positions);
   const simulationMaterial = useParticleSimulationMaterial(positions);
 
-  const [simulationScene, simulationCamera] = useMemo(() => {
-    const scene = new Scene();
-    const camera = new OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
-    const renderTarget = new WebGLRenderTarget(width, height, {
-      minFilter: NearestFilter,
-      magFilter: NearestFilter,
-      format: RGBAFormat,
-      type: FloatType,
-    });
+  const [simulationScene, simulationCamera, simulationRenderTarget] =
+    useMemo(() => {
+      const scene = new Scene();
+      const camera = new OrthographicCamera(
+        -1,
+        1,
+        1,
+        -1,
+        1 / Math.pow(2, 53),
+        1
+      );
+      const renderTarget = new WebGLRenderTarget(width, height, {
+        minFilter: NearestFilter,
+        magFilter: NearestFilter,
+        format: RGBAFormat,
+        type: FloatType,
+      });
 
-    const geometry = new BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new BufferAttribute(
-        new Float32Array([
-          -1, -1, 0, 1, -1, 0, 1, 1, 0,
+      const geometry = new BufferGeometry();
+      geometry.setAttribute(
+        "position",
+        new BufferAttribute(
+          new Float32Array([
+            -1, -1, 0, 1, -1, 0, 1, 1, 0,
 
-          -1, -1, 0, 1, 1, 0, -1, 1, 0,
-        ]),
-        3
-      )
-    );
+            -1, -1, 0, 1, 1, 0, -1, 1, 0,
+          ]),
+          3
+        )
+      );
 
-    geometry.setAttribute(
-      "uv",
-      new BufferAttribute(
-        new Float32Array([
-          0, 1, 1, 1, 1, 0,
+      geometry.setAttribute(
+        "uv",
+        new BufferAttribute(
+          new Float32Array([
+            0, 1, 1, 1, 1, 0,
 
-          0, 1, 1, 0, 0, 0,
-        ]),
-        2
-      )
-    );
+            0, 1, 1, 0, 0, 0,
+          ]),
+          2
+        )
+      );
 
-    scene.add(new Mesh(geometry, simulationMaterial));
+      scene.add(new Mesh(geometry, simulationMaterial));
 
-    return [scene, camera];
-  }, [positions]);
+      return [scene, camera, renderTarget];
+    }, [positions]);
 
   useFrame(({ gl, scene, camera }, dt) => {
-    gl.render(scene, camera);
+    gl.setRenderTarget(simulationRenderTarget);
+    gl.clear();
     gl.render(simulationScene, simulationCamera);
+    gl.setRenderTarget(null);
+
+    renderMaterial.uniforms.u_positions.value = simulationRenderTarget.texture;
+
+    gl.render(scene, camera);
   }, 1);
 
   return (
