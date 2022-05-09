@@ -1,6 +1,6 @@
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { insideSphere } from "randomish";
-import { FC, useMemo, useRef } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -163,6 +163,18 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     }, [positions]);
 
   const points = useRef<Points>(null!);
+
+  const { gl } = useThree();
+
+  useEffect(() => {
+    gl.setRenderTarget(simulationRenderTargets[0]);
+    gl.clear();
+    gl.render(simulationScene, simulationCamera);
+    gl.setRenderTarget(simulationRenderTargets[1]);
+    gl.clear();
+    gl.render(simulationScene, simulationCamera);
+    gl.setRenderTarget(null);
+  }, []);
 
   let active = 0;
 
