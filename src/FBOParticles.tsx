@@ -7,12 +7,14 @@ import {
   BufferGeometry,
   DataTexture,
   FloatType,
+  RGBAFormat,
   RGBFormat,
   ShaderMaterial,
 } from "three";
 import renderVertexShader from "./shaders/render.vert";
+import renderFragmentShader from "./shaders/render.frag";
 
-const useNormalizedGeometry = (width = 1024, height = 1024) =>
+const useNormalizedGeometry = (width: number, height: number) =>
   useMemo(() => {
     const length = width * height;
 
@@ -33,21 +35,22 @@ const useNormalizedGeometry = (width = 1024, height = 1024) =>
 const usePositions = (width: number, height: number) =>
   useMemo(() => {
     const l = width * height;
-    const data = new Float32Array(l * 3);
+    const data = new Float32Array(l * 4);
 
     for (let i = 0; i < l; i++) {
-      const offset = i * 3;
+      const offset = i * 4;
       const point = insideSphere();
       data[offset + 0] = point.x;
       data[offset + 1] = point.y;
       data[offset + 2] = point.z;
+      data[offset + 3] = 1.0;
     }
 
     const positions = new DataTexture(
       data,
       width,
       height,
-      RGBFormat,
+      RGBAFormat,
       FloatType
     );
     positions.needsUpdate = true;
@@ -60,22 +63,32 @@ const useParticleRenderMaterial = (positions: DataTexture) =>
     () =>
       new ShaderMaterial({
         vertexShader: renderVertexShader,
+        fragmentShader: renderFragmentShader,
         uniforms: {
-          positions: { value: positions },
+          u_positions: { value: positions },
         },
         transparent: true,
         blending: AdditiveBlending,
       }),
-    []
+    [positions]
   );
 
 export const FBOParticles: FC<{ width?: number; height?: number }> = ({
-  width = 1024,
-  height = 1024,
+  width = 256,
+  height = 256,
 }) => {
   const geometry = useNormalizedGeometry(width, height);
   const positions = usePositions(width, height);
+  console.log(positions);
   const renderMaterial = useParticleRenderMaterial(positions);
 
-  return <points geometry={geometry} material={renderMaterial} />;
+  return (
+    <>
+      <points geometry={geometry} material={renderMaterial} />
+      <mesh>
+        <boxGeometry args={[0.1, 0.1, 0.1]} />
+        <meshStandardMaterial color="#ccc" />
+      </mesh>
+    </>
+  );
 };
