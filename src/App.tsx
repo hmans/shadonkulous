@@ -2,7 +2,6 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { FC } from "react";
 import { FBOParticles } from "./FBOParticles";
-import { Particles } from "./Particles";
 
 export const App: FC = () => (
   <>
