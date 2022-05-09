@@ -167,20 +167,22 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   let active = 0;
 
   useFrame(({ gl, scene, camera }, dt) => {
+    /* Update Simulation */
     simulationMaterial.uniforms.u_time.value += dt;
+    simulationMaterial.uniforms.u_positions.value =
+      simulationRenderTargets[(active + 1) % 2].texture;
 
+    /* Render Simulation */
     gl.setRenderTarget(simulationRenderTargets[active]);
     gl.clear();
     gl.render(simulationScene, simulationCamera);
     gl.setRenderTarget(null);
 
+    /* Render actual scene */
     renderMaterial.uniforms.u_positions.value =
       simulationRenderTargets[active].texture;
 
     gl.render(scene, camera);
-
-    // simulationMaterial.uniforms.u_positions.value =
-    //   simulationRenderTargets[(active + 1) % 2].texture;
 
     active = (active + 1) % 2;
   }, 1);
