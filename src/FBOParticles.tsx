@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { useFrame } from "@react-three/fiber";
 import { insideSphere } from "randomish";
 import { FC, useMemo } from "react";
 import {
@@ -7,13 +7,18 @@ import {
   BufferGeometry,
   DataTexture,
   FloatType,
+  Mesh,
+  NearestFilter,
+  OrthographicCamera,
   RGBAFormat,
-  RGBFormat,
+  Scene,
   ShaderMaterial,
+  WebGLRenderTarget,
 } from "three";
-import renderVertexShader from "./shaders/render.vert";
 import renderFragmentShader from "./shaders/render.frag";
-import { useFrame } from "@react-three/fiber";
+import renderVertexShader from "./shaders/render.vert";
+import simulationFragmentShader from "./shaders/simulation.frag";
+import simulationVertexShader from "./shaders/simulation.vert";
 
 const useNormalizedGeometry = (width: number, height: number) =>
   useMemo(() => {
@@ -59,6 +64,21 @@ const usePositions = (width: number, height: number) =>
     return positions;
   }, [width, height]);
 
+const useParticleSimulationMaterial = (positions: DataTexture) =>
+  useMemo(
+    () =>
+      new ShaderMaterial({
+        vertexShader: simulationVertexShader,
+        fragmentShader: simulationFragmentShader,
+        uniforms: {
+          u_positions: { value: positions },
+        },
+        transparent: true,
+        blending: AdditiveBlending,
+      }),
+    []
+  );
+
 const useParticleRenderMaterial = (positions: DataTexture) =>
   useMemo(
     () =>
@@ -81,10 +101,51 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   const geometry = useNormalizedGeometry(width, height);
   const positions = usePositions(width, height);
   const renderMaterial = useParticleRenderMaterial(positions);
+  const simulationMaterial = useParticleSimulationMaterial(positions);
 
-  useFrame((_, dt) => {
-    // renderMaterial.uniforms.u_time.value += dt;
-  });
+  const [simulationScene, simulationCamera] = useMemo(() => {
+    const scene = new Scene();
+    const camera = new OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
+    const renderTarget = new WebGLRenderTarget(width, height, {
+      minFilter: NearestFilter,
+      magFilter: NearestFilter,
+      format: RGBAFormat,
+      type: FloatType,
+    });
+
+    const geometry = new BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new BufferAttribute(
+        new Float32Array([
+          -1, -1, 0, 1, -1, 0, 1, 1, 0,
+
+          -1, -1, 0, 1, 1, 0, -1, 1, 0,
+        ]),
+        3
+      )
+    );
+
+    geometry.setAttribute(
+      "uv",
+      new BufferAttribute(
+        new Float32Array([
+          0, 1, 1, 1, 1, 0,
+
+          0, 1, 1, 0, 0, 0,
+        ]),
+        2
+      )
+    );
+
+    scene.add(new Mesh(geometry, simulationMaterial));
+
+    return [scene, camera];
+  }, [positions]);
+
+  useFrame(({ gl, scene, camera }, dt) => {
+    gl.render(scene, camera);
+  }, 1);
 
   return (
     <>
