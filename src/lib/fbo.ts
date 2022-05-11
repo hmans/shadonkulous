@@ -61,7 +61,7 @@ export class FBO {
 
     /* Update Simulation */
     this.material.uniforms.u_time.value += dt;
-    this.material.uniforms.u_positions.value = this.inputTarget.texture;
+    this.material.uniforms.u_data.value = this.inputTarget.texture;
 
     /* Render Simulation */
     renderer.setRenderTarget(this.outputTarget);
@@ -101,7 +101,7 @@ export class FBO {
       vertexShader: simulationVertexShader,
       fragmentShader: simulationFragmentShader,
       uniforms: {
-        u_positions: { value: null },
+        u_data: { value: null },
         u_time: { value: 0.0 },
       },
       transparent: true,

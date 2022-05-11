@@ -1,6 +1,6 @@
 export default /*glsl*/ `
 
-uniform sampler2D u_positions;
+uniform sampler2D u_data;
 uniform float u_time;
 
 varying vec2 v_uv;
@@ -8,7 +8,7 @@ varying vec2 v_uv;
 void main()
 {
   /* Get the current position */
-  vec3 position = texture2D(u_positions, v_uv).rgb;
+  vec3 position = texture2D(u_data, v_uv).rgb;
 
   /* Animate */
   position *= 1.01;
