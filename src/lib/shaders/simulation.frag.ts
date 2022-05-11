@@ -8,14 +8,9 @@ varying vec2 v_uv;
 
 void main()
 {
-  /* Get the current position */
-  vec3 position = texture2D(u_data, v_uv).rgb;
-
-  /* Animate */
-  position *= 1.0 + 0.25 * u_deltatime;
-
-  /* Set the position as the pixel's color */
-  gl_FragColor = vec4(position, 1.0);
+  vec3 data = texture2D(u_data, v_uv).rgb;
+  data *= 1.0 + 0.25 * u_deltatime;
+  gl_FragColor = vec4(data, 1.0);
 }
 
 `;
