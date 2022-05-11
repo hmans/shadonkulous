@@ -11,6 +11,7 @@ import {
   RGBAFormat,
   Scene,
   ShaderMaterial,
+  WebGLRenderer,
   WebGLRenderTarget,
 } from "three";
 import simulationFragmentShader from "../shaders/simulation.frag";
@@ -23,6 +24,7 @@ export class FBO {
   private scene!: Scene;
   private camera!: OrthographicCamera;
   private material!: ShaderMaterial;
+  private active = 0;
 
   constructor(public width: number, public height: number) {
     this.createTexture();
@@ -30,6 +32,19 @@ export class FBO {
     this.createRenderTargets();
     this.createMaterial();
     this.createScene();
+  }
+
+  public update(renderer: WebGLRenderer, dt: number) {
+    /* Update Simulation */
+    this.material.uniforms.u_time.value += dt;
+    this.material.uniforms.u_positions.value =
+      this.renderTargets[(this.active + 1) % 2].texture;
+
+    /* Render Simulation */
+    renderer.setRenderTarget(this.renderTargets[this.active]);
+    renderer.clear();
+    renderer.render(this.scene, this.camera);
+    renderer.setRenderTarget(null);
   }
 
   private createTexture() {
