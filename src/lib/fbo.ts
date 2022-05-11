@@ -16,10 +16,11 @@ import {
 
 export class FBO {
   public geometry!: BufferGeometry;
+  public material!: ShaderMaterial;
+
   private renderTargets!: [WebGLRenderTarget, WebGLRenderTarget];
   private scene!: Scene;
   private camera!: OrthographicCamera;
-  private material!: ShaderMaterial;
   private active = 0;
 
   public get outputTarget() {

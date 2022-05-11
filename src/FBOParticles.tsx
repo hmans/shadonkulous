@@ -28,30 +28,6 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   const renderMaterial = useParticleRenderMaterial();
   const points = useRef<Points>(null!);
 
-  const positionsFBO = useMemo(() => {
-    const length = width * height;
-    const data = new Float32Array(length * 4);
-
-    for (let i = 0; i < length; i++) {
-      const offset = i * 4;
-      const point = insideSphere();
-      data[offset + 0] = point.x;
-      data[offset + 1] = point.y;
-      data[offset + 2] = point.z;
-      data[offset + 3] = 1.0;
-    }
-
-    const chunk = /*glsl*/ `
-      void main() {
-        vec3 position = texture2D(u_data, v_uv).rgb;
-        position *= 1.0 + 0.25 * u_deltatime;
-        gl_FragColor = vec4(position, 1.0);
-      }
-    `;
-
-    return new FBO(width, height, data, chunk);
-  }, []);
-
   const aliveFBO = useMemo(() => {
     const length = width * height;
     const data = new Float32Array(length * 4);
@@ -74,9 +50,49 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     return new FBO(width, height, data, shader);
   }, []);
 
+  const positionsFBO = useMemo(() => {
+    const length = width * height;
+    const data = new Float32Array(length * 4);
+
+    for (let i = 0; i < length; i++) {
+      const offset = i * 4;
+      const point = insideSphere();
+      data[offset + 0] = point.x;
+      data[offset + 1] = point.y;
+      data[offset + 2] = point.z;
+      data[offset + 3] = 1.0;
+    }
+
+    const chunk = /*glsl*/ `
+      uniform sampler2D u_alive;
+
+      void main() {
+        vec4 alive = texture2D(u_alive, v_uv).rgba;
+        if (alive.a == 0.0) {
+          discard;
+        }
+
+        vec3 position = texture2D(u_data, v_uv).rgb;
+        position *= 1.0 + 0.25 * u_deltatime;
+        gl_FragColor = vec4(position, 1.0);
+      }
+    `;
+
+    const fbo = new FBO(width, height, data, chunk);
+
+    fbo.material.uniforms = {
+      ...fbo.material.uniforms,
+      u_alive: { value: null },
+    };
+
+    return fbo;
+  }, []);
+
   useFrame(({ gl, scene, camera }, dt) => {
     /* Render Simulation */
     aliveFBO.update(gl, dt);
+    positionsFBO.material.uniforms.u_alive.value =
+      aliveFBO.outputTarget.texture;
     positionsFBO.update(gl, dt);
 
     /* Render actual scene */
