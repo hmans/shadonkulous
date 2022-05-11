@@ -78,7 +78,7 @@ const useParticleSimulationMaterial = (positions: DataTexture) =>
         transparent: true,
         blending: AdditiveBlending,
       }),
-    []
+    [positions]
   );
 
 const useParticleRenderMaterial = (positions: DataTexture) =>
@@ -160,7 +160,7 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
       scene.add(new Mesh(geometry, simulationMaterial));
 
       return [scene, camera, renderTargets];
-    }, [positions]);
+    }, [height, width, simulationMaterial]);
 
   const points = useRef<Points>(null!);
 
@@ -174,7 +174,7 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     gl.clear();
     gl.render(simulationScene, simulationCamera);
     gl.setRenderTarget(null);
-  }, []);
+  }, [gl, simulationCamera, simulationRenderTargets, simulationScene]);
 
   let active = 0;
 
@@ -198,6 +198,11 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 
     active = (active + 1) % 2;
   }, 1);
+
+  /* Rotate the particles */
+  useFrame((_, dt) => {
+    points.current.rotation.y += 0.5 * dt;
+  });
 
   return (
     <>
