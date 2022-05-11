@@ -1,7 +1,12 @@
 import { useFrame } from "@react-three/fiber";
 import { insideSphere } from "randomish";
 import { FC, useMemo, useRef } from "react";
-import { AdditiveBlending, Points, ShaderMaterial } from "three";
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  Points,
+  ShaderMaterial,
+} from "three";
 import { FBO } from "./lib/fbo";
 import renderFragmentShader from "./shaders/render.frag";
 import renderVertexShader from "./shaders/render.vert";
@@ -31,7 +36,14 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
       }
     `;
 
-    return new FBO(width, height, data, shader);
+    const fbo = new FBO(width, height, data, shader);
+
+    /* Status Buffer */
+    const size = 1 + 3 * 3;
+    const status = new Float32Array(width * height * size);
+    fbo.geometry.setAttribute("status", new BufferAttribute(status, size));
+
+    return fbo;
   }, []);
 
   const positionsFBO = useMemo(() => {
