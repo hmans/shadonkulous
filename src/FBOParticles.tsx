@@ -27,6 +27,7 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const renderMaterial = useParticleRenderMaterial();
   const points = useRef<Points>(null!);
+
   const positionsFBO = useMemo(() => {
     const length = width * height;
     const data = new Float32Array(length * 4);
@@ -49,8 +50,29 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     return new FBO(width, height, data, chunk);
   }, []);
 
+  const aliveFBO = useMemo(() => {
+    const length = width * height;
+    const data = new Float32Array(length * 4);
+
+    for (let i = 0; i < length; i++) {
+      const offset = i * 4;
+      data[offset + 0] = 0;
+      data[offset + 1] = 0;
+      data[offset + 2] = 0;
+      data[offset + 3] = 0;
+    }
+
+    const chunk = /*glsl*/ `
+      vec4 data = texture2D(u_data, v_uv).rgba;
+      gl_FragColor = data;
+    `;
+
+    return new FBO(width, height, data, chunk);
+  }, []);
+
   useFrame(({ gl, scene, camera }, dt) => {
     /* Render Simulation */
+    aliveFBO.update(gl, dt);
     positionsFBO.update(gl, dt);
 
     /* Render actual scene */
