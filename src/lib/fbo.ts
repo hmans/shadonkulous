@@ -35,11 +35,12 @@ export class FBO {
   constructor(
     public width: number,
     public height: number,
-    initialData: Float32Array
+    initialData: Float32Array,
+    public chunk: string
   ) {
     this.createGeometry();
     this.createRenderTargets();
-    this.createMaterial();
+    this.createMaterial(chunk);
     this.createScene();
 
     this.inputTarget.texture = new DataTexture(
@@ -96,10 +97,34 @@ export class FBO {
     this.renderTargets = [make(), make()];
   }
 
-  private createMaterial() {
+  private createMaterial(chunk: string) {
+    const vertexShader = /*glsl*/ `
+      uniform float u_deltatime;
+      uniform float u_time;
+
+      varying vec2 v_uv;
+
+      void main()
+      {
+        v_uv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`;
+
+    const fragmentShader = /*glsl*/ `
+      uniform sampler2D u_data;
+      uniform float u_deltatime;
+      uniform float u_time;
+
+      varying vec2 v_uv;
+
+      void main()
+      {
+        ${chunk}
+      }`;
+
     this.material = new ShaderMaterial({
-      vertexShader: simulationVertexShader,
-      fragmentShader: simulationFragmentShader,
+      vertexShader,
+      fragmentShader,
       uniforms: {
         u_data: { value: null },
         u_deltatime: { value: 0.0 },

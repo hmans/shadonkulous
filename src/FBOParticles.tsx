@@ -40,7 +40,13 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
       data[offset + 3] = 1.0;
     }
 
-    return new FBO(width, height, data);
+    const chunk = /*glsl*/ `
+      vec3 position = texture2D(u_data, v_uv).rgb;
+      position *= 1.0 + 0.25 * u_deltatime;
+      gl_FragColor = vec4(position, 1.0);
+    `;
+
+    return new FBO(width, height, data, chunk);
   }, []);
 
   useFrame(({ gl, scene, camera }, dt) => {
