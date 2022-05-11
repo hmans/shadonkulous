@@ -13,8 +13,6 @@ import {
   WebGLRenderer,
   WebGLRenderTarget,
 } from "three";
-import simulationFragmentShader from "./shaders/simulation.frag";
-import simulationVertexShader from "./shaders/simulation.vert";
 
 export class FBO {
   public geometry!: BufferGeometry;
@@ -43,6 +41,7 @@ export class FBO {
     this.createMaterial(chunk);
     this.createScene();
 
+    /* Initialize the system by creating a new texture for both targets. */
     this.inputTarget.texture = new DataTexture(
       initialData,
       this.width,
