@@ -1,4 +1,3 @@
-import { insideSphere } from "randomish";
 import {
   AdditiveBlending,
   BufferAttribute,
@@ -14,8 +13,8 @@ import {
   WebGLRenderer,
   WebGLRenderTarget,
 } from "three";
-import simulationFragmentShader from "../shaders/simulation.frag";
-import simulationVertexShader from "../shaders/simulation.vert";
+import simulationFragmentShader from "./shaders/simulation.frag";
+import simulationVertexShader from "./shaders/simulation.vert";
 
 export class FBO {
   public geometry!: BufferGeometry;
