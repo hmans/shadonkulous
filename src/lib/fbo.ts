@@ -4,16 +4,20 @@ import {
   BufferGeometry,
   DataTexture,
   FloatType,
+  NearestFilter,
   RGBAFormat,
+  WebGLRenderTarget,
 } from "three";
 
 export class FBO {
   public texture!: DataTexture;
   private geometry!: BufferGeometry;
+  private renderTargets!: [WebGLRenderTarget, WebGLRenderTarget];
 
   constructor(public width: number, public height: number) {
     this.createTexture();
     this.createGeometry();
+    this.createRenderTargets();
   }
 
   private createTexture() {
@@ -54,5 +58,17 @@ export class FBO {
 
     this.geometry = new BufferGeometry();
     this.geometry.setAttribute("position", new BufferAttribute(vertices, 3));
+  }
+
+  private createRenderTargets() {
+    const make = () =>
+      new WebGLRenderTarget(this.width, this.height, {
+        minFilter: NearestFilter,
+        magFilter: NearestFilter,
+        format: RGBAFormat,
+        type: FloatType,
+      });
+
+    this.renderTargets = [make(), make()];
   }
 }
