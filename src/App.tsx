@@ -1,5 +1,6 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { Perf } from "r3f-perf";
 import { FC } from "react";
 import { FBOParticles } from "./FBOParticles";
 
@@ -21,6 +22,7 @@ export const App: FC = () => (
       <dodecahedronBufferGeometry />
       <meshStandardMaterial color="#ccc" />
     </mesh> */}
+      <Perf />
     </Canvas>
   </>
 );

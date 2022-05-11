@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.0",
     "@types/three": "^0.140.0",
     "leva": "^0.9.25",
+    "r3f-perf": "^6.2.6",
     "randomish": "^0.1.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
