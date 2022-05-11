@@ -59,7 +59,7 @@ export class FBO {
     this.active = (this.active + 1) % 2;
 
     /* Update Simulation */
-    this.material.uniforms.u_time.value += dt;
+    this.material.uniforms.u_deltatime.value += dt;
     this.material.uniforms.u_data.value = this.inputTarget.texture;
 
     /* Render Simulation */
@@ -101,7 +101,7 @@ export class FBO {
       fragmentShader: simulationFragmentShader,
       uniforms: {
         u_data: { value: null },
-        u_time: { value: 0.0 },
+        u_deltatime: { value: 0.0 },
       },
       transparent: true,
       blending: AdditiveBlending,

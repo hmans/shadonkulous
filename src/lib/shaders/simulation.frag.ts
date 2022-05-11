@@ -1,7 +1,7 @@
 export default /*glsl*/ `
 
 uniform sampler2D u_data;
-uniform float u_time;
+uniform float u_deltatime;
 
 varying vec2 v_uv;
 

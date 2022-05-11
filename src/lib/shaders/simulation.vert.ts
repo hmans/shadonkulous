@@ -1,6 +1,6 @@
 export default /*glsl*/ `
 
-uniform float u_time;
+uniform float u_deltatime;
 
 varying vec2 v_uv;
 
