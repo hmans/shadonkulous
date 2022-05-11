@@ -43,16 +43,14 @@ export class FBO {
     this.createScene();
 
     /* Initialize the system by creating a new texture for both targets. */
-    this.inputTarget.texture = new DataTexture(
+    this.outputTarget.texture = new DataTexture(
       initialData,
       this.width,
       this.height,
       RGBAFormat,
       FloatType
     );
-    this.inputTarget.texture.needsUpdate = true;
-
-    this.outputTarget.texture = this.inputTarget.texture.clone();
+    this.outputTarget.texture.needsUpdate = true;
   }
 
   public update(renderer: WebGLRenderer, dt: number) {

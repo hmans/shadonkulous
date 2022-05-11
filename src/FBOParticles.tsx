@@ -6,26 +6,10 @@ import { FBO } from "./lib/fbo";
 import renderFragmentShader from "./shaders/render.frag";
 import renderVertexShader from "./shaders/render.vert";
 
-const useParticleRenderMaterial = () =>
-  useMemo(
-    () =>
-      new ShaderMaterial({
-        vertexShader: renderVertexShader,
-        fragmentShader: renderFragmentShader,
-        uniforms: {
-          u_positions: { value: null },
-        },
-        transparent: true,
-        blending: AdditiveBlending,
-      }),
-    []
-  );
-
 export const FBOParticles: FC<{ width?: number; height?: number }> = ({
   width = 256,
   height = 256,
 }) => {
-  const renderMaterial = useParticleRenderMaterial();
   const points = useRef<Points>(null!);
 
   const aliveFBO = useMemo(() => {
@@ -34,10 +18,10 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 
     for (let i = 0; i < length; i++) {
       const offset = i * 4;
-      data[offset + 0] = 0;
+      data[offset + 0] = i * 0.02;
       data[offset + 1] = 0;
       data[offset + 2] = 0;
-      data[offset + 3] = 0;
+      data[offset + 3] = 1.0;
     }
 
     const shader = /*glsl*/ `
@@ -67,13 +51,13 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
       uniform sampler2D u_alive;
 
       void main() {
-        vec4 alive = texture2D(u_alive, v_uv).rgba;
-        if (alive.a == 0.0) {
-          discard;
-        }
-
         vec3 position = texture2D(u_data, v_uv).rgb;
+
+        /* Animate position */
         position *= 1.0 + 0.25 * u_deltatime;
+
+        vec3 alive = texture2D(u_alive, v_uv).rgb;
+
         gl_FragColor = vec4(position, 1.0);
       }
     `;
@@ -87,6 +71,20 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 
     return fbo;
   }, []);
+
+  const renderMaterial = useMemo(
+    () =>
+      new ShaderMaterial({
+        vertexShader: renderVertexShader,
+        fragmentShader: renderFragmentShader,
+        uniforms: {
+          u_positions: { value: null },
+        },
+        transparent: true,
+        blending: AdditiveBlending,
+      }),
+    []
+  );
 
   useFrame(({ gl, scene, camera }, dt) => {
     /* Render Simulation */
