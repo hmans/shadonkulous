@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { insideSphere } from "randomish";
 import { FC, useMemo, useRef } from "react";
 import { AdditiveBlending, Points, ShaderMaterial } from "three";
 import { FBO } from "./lib/fbo";
@@ -26,7 +27,21 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
 }) => {
   const renderMaterial = useParticleRenderMaterial();
   const points = useRef<Points>(null!);
-  const positionsFBO = useMemo(() => new FBO(width, height), []);
+  const positionsFBO = useMemo(() => {
+    const length = width * height;
+    const data = new Float32Array(length * 4);
+
+    for (let i = 0; i < length; i++) {
+      const offset = i * 4;
+      const point = insideSphere();
+      data[offset + 0] = point.x;
+      data[offset + 1] = point.y;
+      data[offset + 2] = point.z;
+      data[offset + 3] = 1.0;
+    }
+
+    return new FBO(width, height, data);
+  }, []);
 
   useFrame(({ gl, scene, camera }, dt) => {
     /* Render Simulation */

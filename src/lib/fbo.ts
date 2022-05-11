@@ -18,7 +18,6 @@ import simulationFragmentShader from "../shaders/simulation.frag";
 import simulationVertexShader from "../shaders/simulation.vert";
 
 export class FBO {
-  public texture!: DataTexture;
   public geometry!: BufferGeometry;
   private renderTargets!: [WebGLRenderTarget, WebGLRenderTarget];
   private scene!: Scene;
@@ -34,15 +33,26 @@ export class FBO {
     return this.renderTargets[(this.active + 1) % 2];
   }
 
-  constructor(public width: number, public height: number) {
-    this.createTexture();
+  constructor(
+    public width: number,
+    public height: number,
+    initialData: Float32Array
+  ) {
     this.createGeometry();
     this.createRenderTargets();
     this.createMaterial();
     this.createScene();
 
-    this.inputTarget.texture = this.texture.clone();
-    this.outputTarget.texture = this.texture.clone();
+    this.inputTarget.texture = new DataTexture(
+      initialData,
+      this.width,
+      this.height,
+      RGBAFormat,
+      FloatType
+    );
+    this.inputTarget.texture.needsUpdate = true;
+
+    this.outputTarget.texture = this.inputTarget.texture.clone();
   }
 
   public update(renderer: WebGLRenderer, dt: number) {
@@ -58,32 +68,6 @@ export class FBO {
     renderer.clear();
     renderer.render(this.scene, this.camera);
     renderer.setRenderTarget(null);
-  }
-
-  private createTexture() {
-    /* Generate initial data for texture */
-    const length = this.width * this.height;
-    const data = new Float32Array(length * 4);
-
-    for (let i = 0; i < length; i++) {
-      const offset = i * 4;
-      const point = insideSphere();
-      data[offset + 0] = point.x;
-      data[offset + 1] = point.y;
-      data[offset + 2] = point.z;
-      data[offset + 3] = 1.0;
-    }
-
-    /* Create data texture */
-    this.texture = new DataTexture(
-      data,
-      this.width,
-      this.height,
-      RGBAFormat,
-      FloatType
-    );
-
-    this.texture.needsUpdate = true;
   }
 
   private createGeometry() {
@@ -117,7 +101,7 @@ export class FBO {
       vertexShader: simulationVertexShader,
       fragmentShader: simulationFragmentShader,
       uniforms: {
-        u_positions: { value: this.texture },
+        u_positions: { value: null },
         u_time: { value: 0.0 },
       },
       transparent: true,
