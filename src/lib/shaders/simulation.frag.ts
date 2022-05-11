@@ -12,7 +12,7 @@ void main()
   vec3 position = texture2D(u_data, v_uv).rgb;
 
   /* Animate */
-  position *= 1.0 + u_deltatime;
+  position *= 1.0 + 0.25 * u_deltatime;
 
   /* Set the position as the pixel's color */
   gl_FragColor = vec4(position, 1.0);
