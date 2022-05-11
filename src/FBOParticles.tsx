@@ -42,9 +42,11 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
     }
 
     const chunk = /*glsl*/ `
-      vec3 position = texture2D(u_data, v_uv).rgb;
-      position *= 1.0 + 0.25 * u_deltatime;
-      gl_FragColor = vec4(position, 1.0);
+      void main() {
+        vec3 position = texture2D(u_data, v_uv).rgb;
+        position *= 1.0 + 0.25 * u_deltatime;
+        gl_FragColor = vec4(position, 1.0);
+      }
     `;
 
     return new FBO(width, height, data, chunk);
@@ -62,12 +64,14 @@ export const FBOParticles: FC<{ width?: number; height?: number }> = ({
       data[offset + 3] = 0;
     }
 
-    const chunk = /*glsl*/ `
-      vec4 data = texture2D(u_data, v_uv).rgba;
-      gl_FragColor = data;
+    const shader = /*glsl*/ `
+      void main() {
+        vec4 data = texture2D(u_data, v_uv).rgba;
+        gl_FragColor = data;
+      }
     `;
 
-    return new FBO(width, height, data, chunk);
+    return new FBO(width, height, data, shader);
   }, []);
 
   useFrame(({ gl, scene, camera }, dt) => {

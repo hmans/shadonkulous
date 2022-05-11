@@ -34,11 +34,11 @@ export class FBO {
     public width: number,
     public height: number,
     initialData: Float32Array,
-    public chunk: string
+    public shader: string
   ) {
     this.createGeometry();
     this.createRenderTargets();
-    this.createMaterial(chunk);
+    this.createMaterial(shader);
     this.createScene();
 
     /* Initialize the system by creating a new texture for both targets. */
@@ -96,11 +96,8 @@ export class FBO {
     this.renderTargets = [make(), make()];
   }
 
-  private createMaterial(chunk: string) {
+  private createMaterial(shader: string) {
     const vertexShader = /*glsl*/ `
-      uniform float u_deltatime;
-      uniform float u_time;
-
       varying vec2 v_uv;
 
       void main()
@@ -113,13 +110,9 @@ export class FBO {
       uniform sampler2D u_data;
       uniform float u_deltatime;
       uniform float u_time;
-
       varying vec2 v_uv;
 
-      void main()
-      {
-        ${chunk}
-      }`;
+      ${shader}`;
 
     this.material = new ShaderMaterial({
       vertexShader,
