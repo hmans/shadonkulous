@@ -19,12 +19,20 @@ import simulationVertexShader from "../shaders/simulation.vert";
 
 export class FBO {
   public texture!: DataTexture;
-  private geometry!: BufferGeometry;
+  public geometry!: BufferGeometry;
   private renderTargets!: [WebGLRenderTarget, WebGLRenderTarget];
   private scene!: Scene;
   private camera!: OrthographicCamera;
   private material!: ShaderMaterial;
   private active = 0;
+
+  public get outputTarget() {
+    return this.renderTargets[this.active];
+  }
+
+  public get inputTarget() {
+    return this.renderTargets[(this.active + 1) % 2];
+  }
 
   constructor(public width: number, public height: number) {
     this.createTexture();
@@ -35,13 +43,15 @@ export class FBO {
   }
 
   public update(renderer: WebGLRenderer, dt: number) {
+    /* Next! */
+    this.active = (this.active + 1) % 2;
+
     /* Update Simulation */
     this.material.uniforms.u_time.value += dt;
-    this.material.uniforms.u_positions.value =
-      this.renderTargets[(this.active + 1) % 2].texture;
+    this.material.uniforms.u_positions.value = this.inputTarget.texture;
 
     /* Render Simulation */
-    renderer.setRenderTarget(this.renderTargets[this.active]);
+    renderer.setRenderTarget(this.outputTarget);
     renderer.clear();
     renderer.render(this.scene, this.camera);
     renderer.setRenderTarget(null);
