@@ -40,6 +40,9 @@ export class FBO {
     this.createRenderTargets();
     this.createMaterial();
     this.createScene();
+
+    this.inputTarget.texture = this.texture.clone();
+    this.outputTarget.texture = this.texture.clone();
   }
 
   public update(renderer: WebGLRenderer, dt: number) {
