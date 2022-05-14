@@ -131,11 +131,11 @@ export const Instancicles: FC<{
       spawnParticle(
         pos.random(),
         quat.random(),
-        // scale.setScalar(Math.random() > 0.5 ? 1 : 0.5)
+        scale.setScalar(Math.random() > 0.5 ? 1 : 0.5)
         // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
-        scale.setScalar(1)
+        // scale.setScalar(1)
       );
-    }, 15);
+    }, 100);
 
     return () => {
       clearInterval(interval);
