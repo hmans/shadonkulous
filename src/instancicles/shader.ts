@@ -10,7 +10,7 @@ varying float v_timeStart;
 varying float v_timeEnd;
 
 void main() {
-  float t = u_time;
+  float t = u_time - timeStart;
 
   /* Apply velocity and acceleration */
   csm_Position += t * velocity + 0.5 * t * t * acceleration;
