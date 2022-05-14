@@ -33,26 +33,30 @@ export const Instancicles: FC<{
       itemSize
     );
 
-  const time = useMemo(() => createAttribute(2), [maxInstanceCount]);
-  const velocity = useMemo(() => createAttribute(3), [maxInstanceCount]);
-  const acceleration = useMemo(() => createAttribute(3), [maxInstanceCount]);
-  const colorStart = useMemo(() => createAttribute(4), [maxInstanceCount]);
-  const colorEnd = useMemo(() => createAttribute(4), [maxInstanceCount]);
-  const scaleStart = useMemo(() => createAttribute(3), [maxInstanceCount]);
-  const scaleEnd = useMemo(() => createAttribute(3), [maxInstanceCount]);
+  const attributes = useMemo(
+    () => ({
+      time: createAttribute(2),
+      velocity: createAttribute(3),
+      acceleration: createAttribute(3),
+      colorStart: createAttribute(4),
+      colorEnd: createAttribute(4),
+      scaleStart: createAttribute(3),
+      scaleEnd: createAttribute(3),
+    }),
+    [maxInstanceCount]
+  );
 
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
-    imesh.current.geometry.setAttribute("time", time);
-    imesh.current.geometry.setAttribute("velocity", velocity);
-    imesh.current.geometry.setAttribute("acceleration", acceleration);
-    imesh.current.geometry.setAttribute("colorStart", colorStart);
-    imesh.current.geometry.setAttribute("colorEnd", colorEnd);
-    imesh.current.geometry.setAttribute("scaleStart", scaleStart);
-    imesh.current.geometry.setAttribute("scaleEnd", scaleEnd);
+    for (const key in attributes) {
+      imesh.current.geometry.setAttribute(
+        key,
+        attributes[key as keyof typeof attributes]
+      );
+    }
 
     imesh.current.count = 0;
-  }, [time, velocity, acceleration, colorStart, colorEnd]);
+  }, [attributes]);
 
   const playhead = useRef(0);
 
@@ -61,16 +65,7 @@ export const Instancicles: FC<{
 
     const { instanceMatrix } = imesh.current;
 
-    [
-      instanceMatrix,
-      time,
-      velocity,
-      acceleration,
-      colorStart,
-      colorEnd,
-      scaleStart,
-      scaleEnd,
-    ].forEach((attribute) => {
+    [instanceMatrix, ...Object.values(attributes)].forEach((attribute) => {
       attribute.needsUpdate = true;
       attribute.updateRange.offset = playhead.current * attribute.itemSize;
       attribute.updateRange.count = count * attribute.itemSize;
@@ -88,14 +83,14 @@ export const Instancicles: FC<{
       );
 
       /* Set times */
-      time.setXY(
+      attributes.time.setXY(
         playhead.current,
         clock.elapsedTime,
         clock.elapsedTime + 4 + Math.random() * 0.1
       );
 
       /* Set velocity */
-      velocity.setXYZ(
+      attributes.velocity.setXYZ(
         playhead.current,
         ...new Vector3()
           .randomDirection()
@@ -109,11 +104,11 @@ export const Instancicles: FC<{
           .toArray()
       );
 
-      acceleration.setXYZ(playhead.current, 0, -8, 0);
-      colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
-      colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
-      scaleStart.setXYZ(playhead.current, 1, 1, 1);
-      scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
+      attributes.acceleration.setXYZ(playhead.current, 0, -8, 0);
+      attributes.colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
+      attributes.colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
+      attributes.scaleStart.setXYZ(playhead.current, 1, 1, 1);
+      attributes.scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
 
       /* Advance playhead */
       playhead.current++;
