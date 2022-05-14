@@ -8728,6 +8728,13 @@ text-table@^0.2.0:
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
+three-custom-shader-material@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/three-custom-shader-material/-/three-custom-shader-material-3.3.5.tgz#af3b797506ffd7eb50f82c80bd4ee55dc9370801"
+  integrity sha512-djrz6sT23QyWmvI3I6lu11SCARN2+RCDj02/78LsxC1J2fyK5JlJeW/pU9XjGoSNLwTpPdRnR2Tn8YItl/UKdA==
+  dependencies:
+    object-hash "^3.0.0"
+
 three-mesh-bvh@^0.5.10:
   version "0.5.10"
   resolved "https://registry.yarnpkg.com/three-mesh-bvh/-/three-mesh-bvh-0.5.10.tgz#6eadd0a9f63d8fc1bb3516bdc96b6ed906a888c4"
