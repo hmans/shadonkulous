@@ -54,31 +54,23 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     imesh.current.setMatrixAt(playhead.current, mat);
     imesh.current.instanceMatrix.needsUpdate = true;
 
-    imesh.current.geometry.attributes.timeStart.setX(
-      playhead.current,
-      clock.elapsedTime
-    );
-    imesh.current.geometry.attributes.timeStart.needsUpdate = true;
+    const { timeStart, timeEnd, velocity, acceleration } =
+      imesh.current.geometry.attributes;
 
-    imesh.current.geometry.attributes.timeEnd.setX(
-      playhead.current,
-      clock.elapsedTime + 2
-    );
-    imesh.current.geometry.attributes.timeEnd.needsUpdate = true;
+    timeStart.setX(playhead.current, clock.elapsedTime);
+    timeStart.needsUpdate = true;
 
-    imesh.current.geometry.attributes.velocity.setXYZ(
+    timeEnd.setX(playhead.current, clock.elapsedTime + 2);
+    timeEnd.needsUpdate = true;
+
+    velocity.setXYZ(
       playhead.current,
       ...new Vector3().randomDirection().toArray()
     );
-    imesh.current.geometry.attributes.velocity.needsUpdate = true;
+    velocity.needsUpdate = true;
 
-    imesh.current.geometry.attributes.acceleration.setXYZ(
-      playhead.current,
-      0,
-      -5,
-      0
-    );
-    imesh.current.geometry.attributes.acceleration.needsUpdate = true;
+    acceleration.setXYZ(playhead.current, 0, -5, 0);
+    acceleration.needsUpdate = true;
 
     /* Advance playhead */
     imesh.current.count++;
