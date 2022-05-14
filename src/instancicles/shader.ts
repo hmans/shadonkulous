@@ -13,8 +13,12 @@ void main() {
   float t = u_time - timeStart;
 
   /* Apply velocity and acceleration */
-  vec3 offset = t * velocity + 0.5 * t * t * acceleration;
-  // offset = vec3(vec4(offset, 1.0) * instanceMatrix);
+  vec3 offset = vec3(t * velocity + 0.5 * t * t * acceleration);
+
+  /* Fixes rotation, but not scaling, argh! */
+  offset = offset * mat3(instanceMatrix);
+
+
   csm_Position += offset;
 
   /* Pass varyings to fragment shader */

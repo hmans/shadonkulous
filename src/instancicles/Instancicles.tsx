@@ -95,8 +95,9 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     const interval = setInterval(() => {
       spawnParticle(
         pos.random(),
-        quat,
-        scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
+        quat.random(),
+        // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
+        scale.setScalar(1)
       );
     }, 100);
 
@@ -113,7 +114,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
 
   return (
     <instancedMesh ref={imesh} args={[undefined, undefined, maxParticles]}>
-      <sphereGeometry />
+      <boxGeometry />
       <CustomShaderMaterial
         ref={material}
         baseMaterial={MeshStandardMaterial}
