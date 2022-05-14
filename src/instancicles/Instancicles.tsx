@@ -13,36 +13,43 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
 import * as shader from "./shader";
 
-export const Instancicles: FC<{ maxParticles?: number }> = ({
-  maxParticles = 10000,
-}) => {
+export const Instancicles: FC<{
+  maxParticles?: number;
+  safetySize?: number;
+}> = ({ maxParticles = 100, safetySize = 500 }) => {
+  const maxInstanceCount = maxParticles + safetySize;
+
   const imesh = useRef<InstancedMesh>(null!);
   const material = useRef<CSMImpl>(null!);
   const { clock } = useThree();
 
   const timeStart = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 1),
-    []
+    () => new InstancedBufferAttribute(new Float32Array(maxInstanceCount), 1),
+    [maxInstanceCount]
   );
   const timeEnd = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 1),
-    []
+    () => new InstancedBufferAttribute(new Float32Array(maxInstanceCount), 1),
+    [maxInstanceCount]
   );
   const velocity = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 3),
-    []
+    () =>
+      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 3), 3),
+    [maxInstanceCount]
   );
   const acceleration = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 3),
-    []
+    () =>
+      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 3), 3),
+    [maxInstanceCount]
   );
   const colorStart = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 4),
-    []
+    () =>
+      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 4), 4),
+    [maxInstanceCount]
   );
   const colorEnd = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 4),
-    []
+    () =>
+      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 4), 4),
+    [maxInstanceCount]
   );
 
   useEffect(() => {
@@ -55,7 +62,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     imesh.current.geometry.setAttribute("colorEnd", colorEnd);
 
     imesh.current.count = 0;
-  }, [maxParticles]);
+  }, [timeStart, timeEnd, velocity, acceleration, colorStart, colorEnd]);
 
   const playhead = useRef(0);
 
@@ -104,8 +111,9 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
       colorEnd.updateRange.count = 4;
 
       /* Advance playhead */
-      imesh.current.count++;
+      if (playhead.current >= imesh.current.count) imesh.current.count++;
       playhead.current++;
+      if (playhead.current > maxParticles) playhead.current = 0;
     },
     []
   );
@@ -137,7 +145,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
   });
 
   return (
-    <instancedMesh ref={imesh} args={[undefined, undefined, maxParticles]}>
+    <instancedMesh ref={imesh} args={[undefined, undefined, maxInstanceCount]}>
       <boxGeometry />
       <CustomShaderMaterial
         ref={material}

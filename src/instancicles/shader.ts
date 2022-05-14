@@ -22,7 +22,7 @@ void main() {
   v_colorStart = colorStart;
   v_colorEnd = colorEnd;
   v_age = u_time - v_timeStart;
-  v_lifetime = (u_time - v_timeStart) / (v_timeEnd - v_timeStart);
+  v_lifetime = v_age / (v_timeEnd - v_timeStart);
 
   /* Apply velocity and acceleration */
   vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
