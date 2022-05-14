@@ -12,6 +12,10 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
 import * as shader from "./shader";
 
+const tmpPosition = new Vector3();
+const tmpRotation = new Quaternion();
+const tmpScale = new Vector3();
+
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
@@ -53,76 +57,73 @@ export const Instancicles: FC<{
 
   const playhead = useRef(0);
 
-  const spawnParticle = useCallback(
-    (position: Vector3, quaternion: Quaternion, scale: Vector3) => {
-      // console.log("spawnParticle", playhead.current, clock.elapsedTime);
+  const spawnParticle = useCallback((count: number) => {
+    // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
-      const mat = new Matrix4().compose(
-        position,
-        quaternion,
-        new Vector3(1, 1, 1)
-      );
-      imesh.current.setMatrixAt(playhead.current, mat);
+    const mat = new Matrix4().compose(
+      tmpPosition.random().multiplyScalar(3),
+      tmpRotation.random(),
+      tmpScale.setScalar(1)
+    );
+    imesh.current.setMatrixAt(playhead.current, mat);
 
-      const { instanceMatrix } = imesh.current;
-      instanceMatrix.needsUpdate = true;
-      instanceMatrix.updateRange.offset =
-        playhead.current * instanceMatrix.itemSize;
-      instanceMatrix.updateRange.count = instanceMatrix.itemSize;
+    const { instanceMatrix } = imesh.current;
+    instanceMatrix.needsUpdate = true;
+    instanceMatrix.updateRange.offset =
+      playhead.current * instanceMatrix.itemSize;
+    instanceMatrix.updateRange.count = instanceMatrix.itemSize;
 
-      timeStart.setX(playhead.current, clock.elapsedTime);
-      timeStart.needsUpdate = true;
-      timeStart.updateRange.offset = playhead.current;
-      timeStart.updateRange.count = 1;
+    timeStart.setX(playhead.current, clock.elapsedTime);
+    timeStart.needsUpdate = true;
+    timeStart.updateRange.offset = playhead.current;
+    timeStart.updateRange.count = 1;
 
-      timeEnd.setX(playhead.current, clock.elapsedTime + 4);
-      timeEnd.needsUpdate = true;
-      timeEnd.updateRange.offset = playhead.current;
-      timeEnd.updateRange.count = 1;
+    timeEnd.setX(playhead.current, clock.elapsedTime + 4);
+    timeEnd.needsUpdate = true;
+    timeEnd.updateRange.offset = playhead.current;
+    timeEnd.updateRange.count = 1;
 
-      velocity.setXYZ(
-        playhead.current,
-        ...new Vector3()
-          .randomDirection()
-          .multiplyScalar(Math.random() * 5)
-          .toArray()
-      );
-      velocity.needsUpdate = true;
-      velocity.updateRange.offset = playhead.current * 3;
-      velocity.updateRange.count = 3;
+    velocity.setXYZ(
+      playhead.current,
+      ...new Vector3()
+        .randomDirection()
+        .multiplyScalar(Math.random() * 5)
+        .toArray()
+    );
+    velocity.needsUpdate = true;
+    velocity.updateRange.offset = playhead.current * 3;
+    velocity.updateRange.count = 3;
 
-      acceleration.setXYZ(playhead.current, 0, -5, 0);
-      acceleration.needsUpdate = true;
-      acceleration.updateRange.offset = playhead.current * 3;
-      acceleration.updateRange.count = 3;
+    acceleration.setXYZ(playhead.current, 0, -5, 0);
+    acceleration.needsUpdate = true;
+    acceleration.updateRange.offset = playhead.current * 3;
+    acceleration.updateRange.count = 3;
 
-      colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
-      colorStart.needsUpdate = true;
-      colorStart.updateRange.offset = playhead.current * 4;
-      colorStart.updateRange.count = 4;
+    colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
+    colorStart.needsUpdate = true;
+    colorStart.updateRange.offset = playhead.current * 4;
+    colorStart.updateRange.count = 4;
 
-      colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
-      colorEnd.needsUpdate = true;
-      colorEnd.updateRange.offset = playhead.current * 4;
-      colorEnd.updateRange.count = 4;
+    colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
+    colorEnd.needsUpdate = true;
+    colorEnd.updateRange.offset = playhead.current * 4;
+    colorEnd.updateRange.count = 4;
 
-      scaleStart.setXYZ(playhead.current, 1, 1, 1);
-      scaleStart.needsUpdate = true;
-      scaleStart.updateRange.offset = playhead.current * 3;
-      scaleStart.updateRange.count = 3;
+    scaleStart.setXYZ(playhead.current, 1, 1, 1);
+    scaleStart.needsUpdate = true;
+    scaleStart.updateRange.offset = playhead.current * 3;
+    scaleStart.updateRange.count = 3;
 
-      scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
-      scaleEnd.needsUpdate = true;
-      scaleEnd.updateRange.offset = playhead.current * 3;
-      scaleEnd.updateRange.count = 3;
+    scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
+    scaleEnd.needsUpdate = true;
+    scaleEnd.updateRange.offset = playhead.current * 3;
+    scaleEnd.updateRange.count = 3;
 
-      /* Advance playhead */
-      if (playhead.current >= imesh.current.count) imesh.current.count++;
-      playhead.current++;
-      if (playhead.current > maxParticles) playhead.current = 0;
-    },
-    []
-  );
+    /* Advance playhead */
+    if (playhead.current >= imesh.current.count) imesh.current.count++;
+    playhead.current++;
+    if (playhead.current > maxParticles) playhead.current = 0;
+  }, []);
 
   useEffect(() => {
     const pos = new Vector3();
@@ -130,13 +131,7 @@ export const Instancicles: FC<{
     const scale = new Vector3();
 
     const interval = setInterval(() => {
-      spawnParticle(
-        pos.random(),
-        quat.random(),
-        scale.setScalar(Math.random() > 0.5 ? 1 : 0.5)
-        // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
-        // scale.setScalar(1)
-      );
+      spawnParticle(1);
     }, 20);
 
     return () => {
