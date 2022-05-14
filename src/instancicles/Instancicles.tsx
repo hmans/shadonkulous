@@ -28,6 +28,14 @@ export const Instancicles = () => {
 
     /* Add some extra attributes to the instanced mesh */
     imesh.current.geometry.setAttribute(
+      "timeStart",
+      new InstancedBufferAttribute(new Float32Array([0]), 1)
+    );
+    imesh.current.geometry.setAttribute(
+      "timeEnd",
+      new InstancedBufferAttribute(new Float32Array([1]), 1)
+    );
+    imesh.current.geometry.setAttribute(
       "velocity",
       new InstancedBufferAttribute(new Float32Array([+3, +4, 0]), 3)
     );
@@ -52,6 +60,7 @@ export const Instancicles = () => {
         color="hotpink"
         uniforms={uniforms}
         vertexShader={shader.vertexShader}
+        fragmentShader={shader.fragmentShader}
       />
     </instancedMesh>
   );
