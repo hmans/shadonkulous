@@ -58,8 +58,8 @@ export const Instancicles: FC<{
       // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
       const mat = new Matrix4().compose(
-        new Vector3(),
-        new Quaternion(),
+        position,
+        quaternion,
         new Vector3(1, 1, 1)
       );
       imesh.current.setMatrixAt(playhead.current, mat);

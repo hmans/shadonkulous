@@ -33,11 +33,11 @@ void main() {
   /* Apply velocity and acceleration */
   vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
 
-    /* Apply scale */
+  /* Apply scale */
   csm_Position *= mix(scaleStart, scaleEnd, v_progress);
 
   /* Fixes rotation, but not scaling, argh! */
-  // offset *= mat3(instanceMatrix);
+  offset *= mat3(instanceMatrix);
   csm_Position += offset;
 }
 
