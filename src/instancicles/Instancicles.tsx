@@ -151,7 +151,11 @@ export const Instancicles: FC<{
   });
 
   return (
-    <instancedMesh ref={imesh} args={[undefined, undefined, maxInstanceCount]}>
+    <instancedMesh
+      ref={imesh}
+      args={[undefined, undefined, maxInstanceCount]}
+      position-y={8}
+    >
       <boxGeometry />
       <CustomShaderMaterial
         ref={material}
