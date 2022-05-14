@@ -1,8 +1,7 @@
 export const vertexShader = /* glsl */ `
 uniform float u_time;
 
-attribute float timeStart;
-attribute float timeEnd;
+attribute vec2 time;
 attribute vec3 velocity;
 attribute vec3 acceleration;
 attribute vec4 colorStart;
@@ -23,8 +22,8 @@ vec3 applyQuaternionToVector(vec4 q, vec3 v) {
 
 void main() {
   /* Set varyings */
-  v_timeStart = timeStart;
-  v_timeEnd = timeEnd;
+  v_timeStart = time.x;
+  v_timeEnd = time.y;
   v_colorStart = colorStart;
   v_colorEnd = colorEnd;
   v_age = u_time - v_timeStart;

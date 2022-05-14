@@ -33,8 +33,7 @@ export const Instancicles: FC<{
       itemSize
     );
 
-  const timeStart = useMemo(() => createAttribute(1), [maxInstanceCount]);
-  const timeEnd = useMemo(() => createAttribute(1), [maxInstanceCount]);
+  const time = useMemo(() => createAttribute(2), [maxInstanceCount]);
   const velocity = useMemo(() => createAttribute(3), [maxInstanceCount]);
   const acceleration = useMemo(() => createAttribute(3), [maxInstanceCount]);
   const colorStart = useMemo(() => createAttribute(4), [maxInstanceCount]);
@@ -44,8 +43,7 @@ export const Instancicles: FC<{
 
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
-    imesh.current.geometry.setAttribute("timeStart", timeStart);
-    imesh.current.geometry.setAttribute("timeEnd", timeEnd);
+    imesh.current.geometry.setAttribute("time", time);
     imesh.current.geometry.setAttribute("velocity", velocity);
     imesh.current.geometry.setAttribute("acceleration", acceleration);
     imesh.current.geometry.setAttribute("colorStart", colorStart);
@@ -54,7 +52,7 @@ export const Instancicles: FC<{
     imesh.current.geometry.setAttribute("scaleEnd", scaleEnd);
 
     imesh.current.count = 0;
-  }, [timeStart, timeEnd, velocity, acceleration, colorStart, colorEnd]);
+  }, [time, velocity, acceleration, colorStart, colorEnd]);
 
   const playhead = useRef(0);
 
@@ -65,8 +63,7 @@ export const Instancicles: FC<{
 
     [
       instanceMatrix,
-      timeStart,
-      timeEnd,
+      time,
       velocity,
       acceleration,
       colorStart,
@@ -91,9 +88,9 @@ export const Instancicles: FC<{
       );
 
       /* Set times */
-      timeStart.setX(playhead.current, clock.elapsedTime);
-      timeEnd.setX(
+      time.setXY(
         playhead.current,
+        clock.elapsedTime,
         clock.elapsedTime + 4 + Math.random() * 0.1
       );
 
