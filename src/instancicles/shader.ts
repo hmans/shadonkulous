@@ -28,10 +28,8 @@ void main() {
   vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
 
   /* Fixes rotation, but not scaling, argh! */
-  // offset *= mat3(instanceMatrix);
-  // csm_Position += offset;
-  // csm_PositionRaw = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(csm_Position + offset, 1.);
-  csm_PositionRaw = vec4(0.0, 0.0, 0.0, 1.0);
+  offset *= mat3(instanceMatrix);
+  csm_Position += offset;
 }
 
 `;
