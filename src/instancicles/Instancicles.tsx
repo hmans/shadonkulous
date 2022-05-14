@@ -9,6 +9,7 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
+import * as shader from "./shader";
 
 export const Instancicles = () => {
   const imesh = useRef<InstancedMesh>(null!);
@@ -37,6 +38,7 @@ export const Instancicles = () => {
         baseMaterial={MeshStandardMaterial}
         color="hotpink"
         uniforms={uniforms}
+        vertexShader={shader.vertexShader}
       />
     </instancedMesh>
   );
