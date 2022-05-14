@@ -102,7 +102,13 @@ export const Instancicles: FC<{
         playhead.current,
         ...new Vector3()
           .randomDirection()
-          .multiplyScalar(Math.random() * 5)
+          .multiplyScalar(
+            Math.random() *
+              (5 +
+                Math.cos(clock.elapsedTime * 3) *
+                  Math.sin(clock.elapsedTime / 2) *
+                  4)
+          )
           .toArray()
       );
 
