@@ -10,7 +10,6 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
-import { isMethodSignature } from "typescript";
 import * as shader from "./shader";
 
 export const Instancicles: FC<{ maxParticles?: number }> = ({
@@ -45,7 +44,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
   const playhead = useRef(0);
 
   const spawnParticle = useCallback(() => {
-    console.log("spawnParticle", playhead.current, clock.elapsedTime);
+    // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
     const position = new Vector3();
     const quaternion = new Quaternion();
