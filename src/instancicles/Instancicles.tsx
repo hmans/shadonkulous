@@ -34,6 +34,8 @@ export const Instancicles: FC<{
   const acceleration = useMemo(() => createAttribute(3), [maxInstanceCount]);
   const colorStart = useMemo(() => createAttribute(4), [maxInstanceCount]);
   const colorEnd = useMemo(() => createAttribute(4), [maxInstanceCount]);
+  const scaleStart = useMemo(() => createAttribute(3), [maxInstanceCount]);
+  const scaleEnd = useMemo(() => createAttribute(3), [maxInstanceCount]);
 
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
@@ -43,6 +45,8 @@ export const Instancicles: FC<{
     imesh.current.geometry.setAttribute("acceleration", acceleration);
     imesh.current.geometry.setAttribute("colorStart", colorStart);
     imesh.current.geometry.setAttribute("colorEnd", colorEnd);
+    imesh.current.geometry.setAttribute("scaleStart", scaleStart);
+    imesh.current.geometry.setAttribute("scaleEnd", scaleEnd);
 
     imesh.current.count = 0;
   }, [timeStart, timeEnd, velocity, acceleration, colorStart, colorEnd]);
@@ -102,6 +106,16 @@ export const Instancicles: FC<{
       colorEnd.updateRange.offset = playhead.current * 4;
       colorEnd.updateRange.count = 4;
 
+      scaleStart.setXYZ(playhead.current, 1, 1, 1);
+      scaleStart.needsUpdate = true;
+      scaleStart.updateRange.offset = playhead.current * 3;
+      scaleStart.updateRange.count = 3;
+
+      scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
+      scaleEnd.needsUpdate = true;
+      scaleEnd.updateRange.offset = playhead.current * 3;
+      scaleEnd.updateRange.count = 3;
+
       /* Advance playhead */
       if (playhead.current >= imesh.current.count) imesh.current.count++;
       playhead.current++;
@@ -123,7 +137,7 @@ export const Instancicles: FC<{
         // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
         // scale.setScalar(1)
       );
-    }, 100);
+    }, 20);
 
     return () => {
       clearInterval(interval);

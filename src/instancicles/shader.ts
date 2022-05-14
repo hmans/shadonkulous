@@ -7,6 +7,8 @@ attribute vec3 velocity;
 attribute vec3 acceleration;
 attribute vec4 colorStart;
 attribute vec4 colorEnd;
+attribute vec3 scaleStart;
+attribute vec3 scaleEnd;
 
 varying float v_timeStart;
 varying float v_timeEnd;
@@ -27,8 +29,11 @@ void main() {
   /* Apply velocity and acceleration */
   vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
 
+    /* Apply scale */
+  csm_Position *= mix(scaleStart, scaleEnd, v_lifetime);
+
   /* Fixes rotation, but not scaling, argh! */
-  offset *= mat3(instanceMatrix);
+  // offset *= mat3(instanceMatrix);
   csm_Position += offset;
 }
 
