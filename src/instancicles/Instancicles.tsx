@@ -20,7 +20,7 @@ const tmpMatrix4 = new Matrix4();
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
-}> = ({ maxParticles = 20_0000, safetySize = 5000 }) => {
+}> = ({ maxParticles = 10_000, safetySize = 5000 }) => {
   /* The safetySize allows us to emit a batch of particles that would iotherwise
   exceed the maximum instance count (which would make WebGL crash.) This way, we don't
   have to upload the entirety of all buffers every time the playhead wraps back to 0. */
