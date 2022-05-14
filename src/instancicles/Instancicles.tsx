@@ -19,24 +19,29 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
   const material = useRef<CSMImpl>(null!);
   const { clock } = useThree();
 
+  const timeStart = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 1),
+    []
+  );
+  const timeEnd = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 1),
+    []
+  );
+  const velocity = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 3),
+    []
+  );
+  const acceleration = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 3),
+    []
+  );
+
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
-    imesh.current.geometry.setAttribute(
-      "timeStart",
-      new InstancedBufferAttribute(new Float32Array(maxParticles), 1)
-    );
-    imesh.current.geometry.setAttribute(
-      "timeEnd",
-      new InstancedBufferAttribute(new Float32Array(maxParticles), 1)
-    );
-    imesh.current.geometry.setAttribute(
-      "velocity",
-      new InstancedBufferAttribute(new Float32Array(maxParticles), 3)
-    );
-    imesh.current.geometry.setAttribute(
-      "acceleration",
-      new InstancedBufferAttribute(new Float32Array(maxParticles), 3)
-    );
+    imesh.current.geometry.setAttribute("timeStart", timeStart);
+    imesh.current.geometry.setAttribute("timeEnd", timeEnd);
+    imesh.current.geometry.setAttribute("velocity", velocity);
+    imesh.current.geometry.setAttribute("acceleration", acceleration);
 
     imesh.current.count = 0;
   }, [maxParticles]);
@@ -54,23 +59,28 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     imesh.current.setMatrixAt(playhead.current, mat);
     imesh.current.instanceMatrix.needsUpdate = true;
 
-    const { timeStart, timeEnd, velocity, acceleration } =
-      imesh.current.geometry.attributes;
-
     timeStart.setX(playhead.current, clock.elapsedTime);
     timeStart.needsUpdate = true;
+    timeStart.updateRange.offset = playhead.current;
+    timeStart.updateRange.count = 1;
 
     timeEnd.setX(playhead.current, clock.elapsedTime + 2);
     timeEnd.needsUpdate = true;
+    timeEnd.updateRange.offset = playhead.current;
+    timeEnd.updateRange.count = 1;
 
     velocity.setXYZ(
       playhead.current,
       ...new Vector3().randomDirection().toArray()
     );
     velocity.needsUpdate = true;
+    velocity.updateRange.offset = playhead.current * 3;
+    velocity.updateRange.count = 3;
 
     acceleration.setXYZ(playhead.current, 0, -5, 0);
     acceleration.needsUpdate = true;
+    acceleration.updateRange.offset = playhead.current * 3;
+    acceleration.updateRange.count = 3;
 
     /* Advance playhead */
     imesh.current.count++;
