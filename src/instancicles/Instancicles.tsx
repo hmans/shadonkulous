@@ -16,7 +16,7 @@ import * as shader from "./shader";
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
-}> = ({ maxParticles = 100, safetySize = 500 }) => {
+}> = ({ maxParticles = 1_000_000, safetySize = 500 }) => {
   const maxInstanceCount = maxParticles + safetySize;
 
   const imesh = useRef<InstancedMesh>(null!);
@@ -72,14 +72,19 @@ export const Instancicles: FC<{
 
       const mat = new Matrix4().compose(position, quaternion, scale);
       imesh.current.setMatrixAt(playhead.current, mat);
-      imesh.current.instanceMatrix.needsUpdate = true;
+
+      const { instanceMatrix } = imesh.current;
+      instanceMatrix.needsUpdate = true;
+      instanceMatrix.updateRange.offset =
+        playhead.current * instanceMatrix.itemSize;
+      instanceMatrix.updateRange.count = instanceMatrix.itemSize;
 
       timeStart.setX(playhead.current, clock.elapsedTime);
       timeStart.needsUpdate = true;
       timeStart.updateRange.offset = playhead.current;
       timeStart.updateRange.count = 1;
 
-      timeEnd.setX(playhead.current, clock.elapsedTime + 3);
+      timeEnd.setX(playhead.current, clock.elapsedTime + 4);
       timeEnd.needsUpdate = true;
       timeEnd.updateRange.offset = playhead.current;
       timeEnd.updateRange.count = 1;
@@ -131,7 +136,7 @@ export const Instancicles: FC<{
         // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
         scale.setScalar(1)
       );
-    }, 10);
+    }, 15);
 
     return () => {
       clearInterval(interval);
