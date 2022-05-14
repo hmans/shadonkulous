@@ -1,4 +1,5 @@
 import { useFrame, useThree } from "@react-three/fiber";
+import { VectorObj } from "leva/dist/declarations/src/types";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   InstancedBufferAttribute,
@@ -48,50 +49,55 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
 
   const playhead = useRef(0);
 
-  const spawnParticle = useCallback(() => {
-    // console.log("spawnParticle", playhead.current, clock.elapsedTime);
+  const spawnParticle = useCallback(
+    (position: Vector3, quaternion: Quaternion, scale: Vector3) => {
+      // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
-    const position = new Vector3();
-    const quaternion = new Quaternion();
-    const scale = new Vector3(1, 1, 1);
+      const mat = new Matrix4().compose(position, quaternion, scale);
+      imesh.current.setMatrixAt(playhead.current, mat);
+      imesh.current.instanceMatrix.needsUpdate = true;
 
-    const mat = new Matrix4().compose(position, quaternion, scale);
-    imesh.current.setMatrixAt(playhead.current, mat);
-    imesh.current.instanceMatrix.needsUpdate = true;
+      timeStart.setX(playhead.current, clock.elapsedTime);
+      timeStart.needsUpdate = true;
+      timeStart.updateRange.offset = playhead.current;
+      timeStart.updateRange.count = 1;
 
-    timeStart.setX(playhead.current, clock.elapsedTime);
-    timeStart.needsUpdate = true;
-    timeStart.updateRange.offset = playhead.current;
-    timeStart.updateRange.count = 1;
+      timeEnd.setX(playhead.current, clock.elapsedTime + 3);
+      timeEnd.needsUpdate = true;
+      timeEnd.updateRange.offset = playhead.current;
+      timeEnd.updateRange.count = 1;
 
-    timeEnd.setX(playhead.current, clock.elapsedTime + 2);
-    timeEnd.needsUpdate = true;
-    timeEnd.updateRange.offset = playhead.current;
-    timeEnd.updateRange.count = 1;
+      velocity.setXYZ(
+        playhead.current,
+        ...new Vector3().randomDirection().toArray()
+      );
+      velocity.needsUpdate = true;
+      velocity.updateRange.offset = playhead.current * 3;
+      velocity.updateRange.count = 3;
 
-    velocity.setXYZ(
-      playhead.current,
-      ...new Vector3().randomDirection().toArray()
-    );
-    velocity.needsUpdate = true;
-    velocity.updateRange.offset = playhead.current * 3;
-    velocity.updateRange.count = 3;
+      acceleration.setXYZ(playhead.current, 0, -5, 0);
+      acceleration.needsUpdate = true;
+      acceleration.updateRange.offset = playhead.current * 3;
+      acceleration.updateRange.count = 3;
 
-    acceleration.setXYZ(playhead.current, 0, -5, 0);
-    acceleration.needsUpdate = true;
-    acceleration.updateRange.offset = playhead.current * 3;
-    acceleration.updateRange.count = 3;
-
-    /* Advance playhead */
-    imesh.current.count++;
-    playhead.current++;
-  }, []);
+      /* Advance playhead */
+      imesh.current.count++;
+      playhead.current++;
+    },
+    []
+  );
 
   useEffect(() => {
-    spawnParticle();
+    const pos = new Vector3();
+    const quat = new Quaternion();
+    const scale = new Vector3();
 
     const interval = setInterval(() => {
-      spawnParticle();
+      spawnParticle(
+        pos.random(),
+        quat,
+        scale.setScalar(1 + Math.pow(Math.random(), 2) * 0.3)
+      );
     }, 100);
 
     return () => {
@@ -107,7 +113,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
 
   return (
     <instancedMesh ref={imesh} args={[undefined, undefined, maxParticles]}>
-      <dodecahedronBufferGeometry />
+      <sphereGeometry />
       <CustomShaderMaterial
         ref={material}
         baseMaterial={MeshStandardMaterial}
