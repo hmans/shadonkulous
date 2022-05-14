@@ -15,11 +15,12 @@ import * as shader from "./shader";
 const tmpPosition = new Vector3();
 const tmpRotation = new Quaternion();
 const tmpScale = new Vector3();
+const tmpMatrix4 = new Matrix4();
 
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
-}> = ({ maxParticles = 10_000, safetySize = 500 }) => {
+}> = ({ maxParticles = 20_000, safetySize = 500 }) => {
   const maxInstanceCount = maxParticles + safetySize;
 
   const imesh = useRef<InstancedMesh>(null!);
@@ -58,7 +59,7 @@ export const Instancicles: FC<{
   const playhead = useRef(0);
 
   const spawnParticle = useCallback((count: number) => {
-    // console.log("spawnParticle", playhead.current, clock.elapsedTime);
+    console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
     const { instanceMatrix } = imesh.current;
 
@@ -75,50 +76,53 @@ export const Instancicles: FC<{
     ].forEach((attribute) => {
       attribute.needsUpdate = true;
       attribute.updateRange.offset = playhead.current * attribute.itemSize;
-      attribute.updateRange.count = attribute.itemSize * count;
+      attribute.updateRange.count = count * attribute.itemSize;
     });
 
-    /* Set Instance Matrix */
-    const mat = new Matrix4().compose(
-      tmpPosition.random().multiplyScalar(3),
-      tmpRotation.random(),
-      tmpScale.setScalar(1)
-    );
-    imesh.current.setMatrixAt(playhead.current, mat);
+    for (let i = 0; i < count; i++) {
+      /* Set Instance Matrix */
+      imesh.current.setMatrixAt(
+        playhead.current,
+        tmpMatrix4.compose(
+          tmpPosition.random().multiplyScalar(3),
+          tmpRotation.random(),
+          tmpScale.setScalar(1)
+        )
+      );
 
-    /* Set times */
-    timeStart.setX(playhead.current, clock.elapsedTime);
-    timeEnd.setX(playhead.current, clock.elapsedTime + 4);
+      /* Set times */
+      timeStart.setX(playhead.current, clock.elapsedTime);
+      timeEnd.setX(playhead.current, clock.elapsedTime + 4);
 
-    /* Set velocity */
-    velocity.setXYZ(
-      playhead.current,
-      ...new Vector3()
-        .randomDirection()
-        .multiplyScalar(Math.random() * 5)
-        .toArray()
-    );
+      /* Set velocity */
+      velocity.setXYZ(
+        playhead.current,
+        ...new Vector3()
+          .randomDirection()
+          .multiplyScalar(Math.random() * 5)
+          .toArray()
+      );
 
-    acceleration.setXYZ(playhead.current, 0, -5, 0);
-    colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
-    colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
-    scaleStart.setXYZ(playhead.current, 1, 1, 1);
-    scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
+      acceleration.setXYZ(playhead.current, 0, -5, 0);
+      colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
+      colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
+      scaleStart.setXYZ(playhead.current, 1, 1, 1);
+      scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
 
-    /* Advance playhead */
-    if (playhead.current >= imesh.current.count) imesh.current.count++;
-    playhead.current++;
+      /* Advance playhead */
+      playhead.current++;
+    }
+
+    /* Increase count of imesh to match playhead */
+    if (playhead.current > imesh.current.count)
+      imesh.current.count = playhead.current;
     if (playhead.current > maxParticles) playhead.current = 0;
   }, []);
 
   useEffect(() => {
-    const pos = new Vector3();
-    const quat = new Quaternion();
-    const scale = new Vector3();
-
     const interval = setInterval(() => {
-      spawnParticle(1);
-    }, 20);
+      spawnParticle(100);
+    }, 100);
 
     return () => {
       clearInterval(interval);
