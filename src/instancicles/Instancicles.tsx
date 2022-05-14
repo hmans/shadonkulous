@@ -60,6 +60,25 @@ export const Instancicles: FC<{
   const spawnParticle = useCallback((count: number) => {
     // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
+    const { instanceMatrix } = imesh.current;
+
+    [
+      instanceMatrix,
+      timeStart,
+      timeEnd,
+      velocity,
+      acceleration,
+      colorStart,
+      colorEnd,
+      scaleStart,
+      scaleEnd,
+    ].forEach((attribute) => {
+      attribute.needsUpdate = true;
+      attribute.updateRange.offset = playhead.current * attribute.itemSize;
+      attribute.updateRange.count = attribute.itemSize * count;
+    });
+
+    /* Set Instance Matrix */
     const mat = new Matrix4().compose(
       tmpPosition.random().multiplyScalar(3),
       tmpRotation.random(),
@@ -67,22 +86,11 @@ export const Instancicles: FC<{
     );
     imesh.current.setMatrixAt(playhead.current, mat);
 
-    const { instanceMatrix } = imesh.current;
-    instanceMatrix.needsUpdate = true;
-    instanceMatrix.updateRange.offset =
-      playhead.current * instanceMatrix.itemSize;
-    instanceMatrix.updateRange.count = instanceMatrix.itemSize;
-
+    /* Set times */
     timeStart.setX(playhead.current, clock.elapsedTime);
-    timeStart.needsUpdate = true;
-    timeStart.updateRange.offset = playhead.current;
-    timeStart.updateRange.count = 1;
-
     timeEnd.setX(playhead.current, clock.elapsedTime + 4);
-    timeEnd.needsUpdate = true;
-    timeEnd.updateRange.offset = playhead.current;
-    timeEnd.updateRange.count = 1;
 
+    /* Set velocity */
     velocity.setXYZ(
       playhead.current,
       ...new Vector3()
@@ -90,34 +98,12 @@ export const Instancicles: FC<{
         .multiplyScalar(Math.random() * 5)
         .toArray()
     );
-    velocity.needsUpdate = true;
-    velocity.updateRange.offset = playhead.current * 3;
-    velocity.updateRange.count = 3;
 
     acceleration.setXYZ(playhead.current, 0, -5, 0);
-    acceleration.needsUpdate = true;
-    acceleration.updateRange.offset = playhead.current * 3;
-    acceleration.updateRange.count = 3;
-
     colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
-    colorStart.needsUpdate = true;
-    colorStart.updateRange.offset = playhead.current * 4;
-    colorStart.updateRange.count = 4;
-
     colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
-    colorEnd.needsUpdate = true;
-    colorEnd.updateRange.offset = playhead.current * 4;
-    colorEnd.updateRange.count = 4;
-
     scaleStart.setXYZ(playhead.current, 1, 1, 1);
-    scaleStart.needsUpdate = true;
-    scaleStart.updateRange.offset = playhead.current * 3;
-    scaleStart.updateRange.count = 3;
-
     scaleEnd.setXYZ(playhead.current, 0.1, 0.1, 0.1);
-    scaleEnd.needsUpdate = true;
-    scaleEnd.updateRange.offset = playhead.current * 3;
-    scaleEnd.updateRange.count = 3;
 
     /* Advance playhead */
     if (playhead.current >= imesh.current.count) imesh.current.count++;
