@@ -1,5 +1,4 @@
 import { useFrame, useThree } from "@react-three/fiber";
-import { VectorObj } from "leva/dist/declarations/src/types";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   InstancedBufferAttribute,
