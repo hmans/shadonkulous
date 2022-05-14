@@ -19,7 +19,7 @@ const tmpScale = new Vector3();
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
-}> = ({ maxParticles = 1_000_000, safetySize = 500 }) => {
+}> = ({ maxParticles = 10_000, safetySize = 500 }) => {
   const maxInstanceCount = maxParticles + safetySize;
 
   const imesh = useRef<InstancedMesh>(null!);
