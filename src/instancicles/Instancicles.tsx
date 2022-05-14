@@ -1,9 +1,4 @@
-import {
-  extend,
-  InstancedMeshProps,
-  useFrame,
-  useThree,
-} from "@react-three/fiber";
+import { extend, useFrame, useThree } from "@react-three/fiber";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   InstancedBufferAttribute,
@@ -19,14 +14,6 @@ import { Particles } from "./Particles";
 import * as shader from "./shader";
 
 extend({ Particles });
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      particles: InstancedMeshProps;
-    }
-  }
-}
 
 const tmpPosition = new Vector3();
 const tmpRotation = new Quaternion();
