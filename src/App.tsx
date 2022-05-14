@@ -1,6 +1,7 @@
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { FC } from "react";
+import { Instancicles } from "./instancicles/Instancicles";
 import { Particles } from "./Particles";
 
 export const App: FC = () => (
@@ -13,7 +14,7 @@ export const App: FC = () => (
 
       <PerspectiveCamera position={[0, 0, 15]} makeDefault />
 
-      <Particles />
+      <Instancicles />
       {/* <RenderPipeline /> */}
 
       {/* <mesh>
