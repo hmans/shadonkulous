@@ -12,6 +12,7 @@ varying float v_timeEnd;
 void main() {
   float t = u_time;
 
+  /* Apply velocity and acceleration */
   csm_Position += t * velocity + 0.5 * t * t * acceleration;
 
   /* Pass varyings to fragment shader */
