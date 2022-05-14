@@ -15,14 +15,16 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
-import { Particles } from "../Particles";
+import { Particles } from "./Particles";
 import * as shader from "./shader";
 
 extend({ Particles });
 
-declare namespace JSX {
-  interface IntrinsicElements {
-    particles: InstancedMeshProps;
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      particles: InstancedMeshProps;
+    }
   }
 }
 
