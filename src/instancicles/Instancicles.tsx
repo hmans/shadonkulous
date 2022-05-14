@@ -1,4 +1,9 @@
-import { useFrame, useThree } from "@react-three/fiber";
+import {
+  extend,
+  InstancedMeshProps,
+  useFrame,
+  useThree,
+} from "@react-three/fiber";
 import { FC, useCallback, useEffect, useMemo, useRef } from "react";
 import {
   InstancedBufferAttribute,
@@ -10,7 +15,16 @@ import {
 } from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import CSMImpl from "three-custom-shader-material/vanilla";
+import { Particles } from "../Particles";
 import * as shader from "./shader";
+
+extend({ Particles });
+
+declare namespace JSX {
+  interface IntrinsicElements {
+    particles: InstancedMeshProps;
+  }
+}
 
 const tmpPosition = new Vector3();
 const tmpRotation = new Quaternion();
@@ -146,7 +160,7 @@ export const Instancicles: FC<{
   });
 
   return (
-    <instancedMesh
+    <particles
       ref={imesh}
       args={[undefined, undefined, maxInstanceCount]}
       position-y={8}
@@ -161,6 +175,6 @@ export const Instancicles: FC<{
         fragmentShader={shader.fragmentShader}
         transparent
       />
-    </instancedMesh>
+    </particles>
   );
 };
