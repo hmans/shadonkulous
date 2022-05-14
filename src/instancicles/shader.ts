@@ -28,6 +28,7 @@ varying float v_timeStart;
 varying float v_timeEnd;
 
 void main() {
+  /* Discard this instance if it is not in the current time range */
   if (u_time < v_timeStart || u_time > v_timeEnd) {
     discard;
   }

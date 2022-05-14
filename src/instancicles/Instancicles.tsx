@@ -1,7 +1,6 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
-  BufferAttribute,
   InstancedBufferAttribute,
   InstancedMesh,
   Matrix4,
