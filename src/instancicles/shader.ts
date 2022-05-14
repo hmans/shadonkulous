@@ -12,7 +12,7 @@ attribute vec3 scaleEnd;
 
 varying float v_timeStart;
 varying float v_timeEnd;
-varying float v_lifetime;
+varying float v_progress;
 varying float v_age;
 varying vec4 v_colorStart;
 varying vec4 v_colorEnd;
@@ -24,13 +24,13 @@ void main() {
   v_colorStart = colorStart;
   v_colorEnd = colorEnd;
   v_age = u_time - v_timeStart;
-  v_lifetime = v_age / (v_timeEnd - v_timeStart);
+  v_progress = v_age / (v_timeEnd - v_timeStart);
 
   /* Apply velocity and acceleration */
   vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
 
     /* Apply scale */
-  csm_Position *= mix(scaleStart, scaleEnd, v_lifetime);
+  csm_Position *= mix(scaleStart, scaleEnd, v_progress);
 
   /* Fixes rotation, but not scaling, argh! */
   // offset *= mat3(instanceMatrix);
@@ -42,7 +42,7 @@ void main() {
 export const fragmentShader = /* glsl */ `
 uniform float u_time;
 
-varying float v_lifetime;
+varying float v_progress;
 varying float v_age;
 varying float v_timeStart;
 varying float v_timeEnd;
@@ -54,6 +54,6 @@ void main() {
   if (u_time < v_timeStart || u_time > v_timeEnd) discard;
 
   vec4 diffuse4 = vec4(diffuse, 1.0);
-  csm_DiffuseColor = mix(diffuse4 * v_colorStart, diffuse4 * v_colorEnd, v_lifetime);
+  csm_DiffuseColor = mix(diffuse4 * v_colorStart, diffuse4 * v_colorEnd, v_progress);
 }
 `;
