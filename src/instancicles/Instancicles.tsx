@@ -20,7 +20,7 @@ const tmpMatrix4 = new Matrix4();
 export const Instancicles: FC<{
   maxParticles?: number;
   safetySize?: number;
-}> = ({ maxParticles = 20_000, safetySize = 500 }) => {
+}> = ({ maxParticles = 20_0000, safetySize = 5000 }) => {
   const maxInstanceCount = maxParticles + safetySize;
 
   const imesh = useRef<InstancedMesh>(null!);
@@ -59,7 +59,7 @@ export const Instancicles: FC<{
   const playhead = useRef(0);
 
   const spawnParticle = useCallback((count: number) => {
-    console.log("spawnParticle", playhead.current, clock.elapsedTime);
+    // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
     const { instanceMatrix } = imesh.current;
 
@@ -92,7 +92,10 @@ export const Instancicles: FC<{
 
       /* Set times */
       timeStart.setX(playhead.current, clock.elapsedTime);
-      timeEnd.setX(playhead.current, clock.elapsedTime + 4);
+      timeEnd.setX(
+        playhead.current,
+        clock.elapsedTime + 4 + Math.random() * 0.1
+      );
 
       /* Set velocity */
       velocity.setXYZ(
@@ -121,7 +124,7 @@ export const Instancicles: FC<{
 
   useEffect(() => {
     const interval = setInterval(() => {
-      spawnParticle(100);
+      spawnParticle(1000);
     }, 100);
 
     return () => {
