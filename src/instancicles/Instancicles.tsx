@@ -53,7 +53,11 @@ export const Instancicles: FC<{
     (position: Vector3, quaternion: Quaternion, scale: Vector3) => {
       // console.log("spawnParticle", playhead.current, clock.elapsedTime);
 
-      const mat = new Matrix4().compose(position, quaternion, scale);
+      const mat = new Matrix4().compose(
+        new Vector3(),
+        new Quaternion(),
+        new Vector3(1, 1, 1)
+      );
       imesh.current.setMatrixAt(playhead.current, mat);
 
       const { instanceMatrix } = imesh.current;
