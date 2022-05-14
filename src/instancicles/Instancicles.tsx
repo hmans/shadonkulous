@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef } from "react";
-import { InstancedMesh, Matrix4, Quaternion, Vector3 } from "three";
+import {
+  InstancedMesh,
+  Matrix4,
+  MeshStandardMaterial,
+  Quaternion,
+  Vector3,
+} from "three";
+import CustomShaderMaterial from "three-custom-shader-material";
 
 export const Instancicles = () => {
   const imesh = useRef<InstancedMesh>(null!);
@@ -16,7 +23,10 @@ export const Instancicles = () => {
   return (
     <instancedMesh ref={imesh} args={[undefined, undefined, 10000]}>
       <dodecahedronBufferGeometry />
-      <meshStandardMaterial color="hotpink" />
+      <CustomShaderMaterial
+        baseMaterial={MeshStandardMaterial}
+        color="hotpink"
+      />
     </instancedMesh>
   );
 };
