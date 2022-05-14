@@ -112,7 +112,7 @@ export const Instancicles: FC<{
           .toArray()
       );
 
-      acceleration.setXYZ(playhead.current, 0, -5, 0);
+      acceleration.setXYZ(playhead.current, 0, -8, 0);
       colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
       colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
       scaleStart.setXYZ(playhead.current, 1, 1, 1);
