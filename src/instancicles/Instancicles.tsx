@@ -1,6 +1,8 @@
 import { useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import {
+  BufferAttribute,
+  InstancedBufferAttribute,
   InstancedMesh,
   Matrix4,
   MeshStandardMaterial,
@@ -22,6 +24,17 @@ export const Instancicles = () => {
 
     const mat = new Matrix4().compose(position, quaternion, scale);
     imesh.current.setMatrixAt(0, mat);
+    imesh.current.count = 1;
+
+    /* Add some extra attributes to the instanced mesh */
+    imesh.current.geometry.setAttribute(
+      "positionStart",
+      new InstancedBufferAttribute(new Float32Array([-3, 0, 0]), 3)
+    );
+    imesh.current.geometry.setAttribute(
+      "positionEnd",
+      new InstancedBufferAttribute(new Float32Array([+3, 0, 0]), 3)
+    );
   }, []);
 
   const uniforms = useMemo(() => ({ u_time: { value: 0 } }), []);
