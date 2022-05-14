@@ -16,9 +16,7 @@ void main() {
   vec3 offset = vec3(t * velocity + 0.5 * t * t * acceleration);
 
   /* Fixes rotation, but not scaling, argh! */
-  offset = offset * mat3(instanceMatrix);
-
-
+  offset *= mat3(instanceMatrix);
   csm_Position += offset;
 
   /* Pass varyings to fragment shader */
