@@ -47,7 +47,7 @@ void main() {
   /* Discard this instance if it is not in the current time range */
   if (u_time < v_timeStart || u_time > v_timeEnd) discard;
 
-  vec4 colorDistance = v_colorEnd - v_colorStart;
-  csm_DiffuseColor = v_colorStart + colorDistance * v_lifetime;
+  vec4 diffuse4 = vec4(diffuse, 1.0);
+  csm_DiffuseColor = mix(diffuse4 * v_colorStart, diffuse4 * v_colorEnd, v_lifetime);
 }
 `;
