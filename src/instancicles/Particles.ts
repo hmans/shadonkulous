@@ -1,5 +1,5 @@
 import { extend, InstancedMeshProps } from "@react-three/fiber";
-import { BufferGeometry, InstancedMesh, Material } from "three";
+import { InstancedMesh } from "three";
 
 export type ParticlesProps = Omit<InstancedMeshProps, "args"> & {
   args?: ConstructorParameters<typeof Particles>;
