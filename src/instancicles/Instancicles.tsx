@@ -22,34 +22,18 @@ export const Instancicles: FC<{
   const material = useRef<CSMImpl>(null!);
   const { clock } = useThree();
 
-  const timeStart = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxInstanceCount), 1),
-    [maxInstanceCount]
-  );
-  const timeEnd = useMemo(
-    () => new InstancedBufferAttribute(new Float32Array(maxInstanceCount), 1),
-    [maxInstanceCount]
-  );
-  const velocity = useMemo(
-    () =>
-      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 3), 3),
-    [maxInstanceCount]
-  );
-  const acceleration = useMemo(
-    () =>
-      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 3), 3),
-    [maxInstanceCount]
-  );
-  const colorStart = useMemo(
-    () =>
-      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 4), 4),
-    [maxInstanceCount]
-  );
-  const colorEnd = useMemo(
-    () =>
-      new InstancedBufferAttribute(new Float32Array(maxInstanceCount * 4), 4),
-    [maxInstanceCount]
-  );
+  const createAttribute = (itemSize: number) =>
+    new InstancedBufferAttribute(
+      new Float32Array(maxInstanceCount * itemSize),
+      itemSize
+    );
+
+  const timeStart = useMemo(() => createAttribute(1), [maxInstanceCount]);
+  const timeEnd = useMemo(() => createAttribute(1), [maxInstanceCount]);
+  const velocity = useMemo(() => createAttribute(3), [maxInstanceCount]);
+  const acceleration = useMemo(() => createAttribute(3), [maxInstanceCount]);
+  const colorStart = useMemo(() => createAttribute(4), [maxInstanceCount]);
+  const colorEnd = useMemo(() => createAttribute(4), [maxInstanceCount]);
 
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
