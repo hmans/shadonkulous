@@ -96,7 +96,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
       spawnParticle(
         pos.random(),
         quat,
-        scale.setScalar(1 + Math.pow(Math.random(), 2) * 0.3)
+        scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
       );
     }, 100);
 

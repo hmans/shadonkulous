@@ -13,7 +13,9 @@ void main() {
   float t = u_time - timeStart;
 
   /* Apply velocity and acceleration */
-  csm_Position += t * velocity + 0.5 * t * t * acceleration;
+  vec3 offset = t * velocity + 0.5 * t * t * acceleration;
+  // offset = vec3(vec4(offset, 1.0) * instanceMatrix);
+  csm_Position += offset;
 
   /* Pass varyings to fragment shader */
   v_timeStart = timeStart;
