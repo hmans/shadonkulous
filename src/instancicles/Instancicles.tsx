@@ -79,7 +79,10 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
 
       velocity.setXYZ(
         playhead.current,
-        ...new Vector3().randomDirection().toArray()
+        ...new Vector3()
+          .randomDirection()
+          .multiplyScalar(Math.random() * 5)
+          .toArray()
       );
       velocity.needsUpdate = true;
       velocity.updateRange.offset = playhead.current * 3;
@@ -116,11 +119,11 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
       spawnParticle(
         pos.random(),
         quat.random(),
-        scale.setScalar(Math.random() > 0.5 ? 1 : 0.5)
+        // scale.setScalar(Math.random() > 0.5 ? 1 : 0.5)
         // scale.setScalar(0.1 + Math.pow(Math.random(), 2) * 0.3)
-        // scale.setScalar(1)
+        scale.setScalar(1)
       );
-    }, 100);
+    }, 10);
 
     return () => {
       clearInterval(interval);
