@@ -36,6 +36,14 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     () => new InstancedBufferAttribute(new Float32Array(maxParticles), 3),
     []
   );
+  const colorStart = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 4),
+    []
+  );
+  const colorEnd = useMemo(
+    () => new InstancedBufferAttribute(new Float32Array(maxParticles), 4),
+    []
+  );
 
   useEffect(() => {
     /* Add some extra attributes to the instanced mesh */
@@ -43,6 +51,8 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
     imesh.current.geometry.setAttribute("timeEnd", timeEnd);
     imesh.current.geometry.setAttribute("velocity", velocity);
     imesh.current.geometry.setAttribute("acceleration", acceleration);
+    imesh.current.geometry.setAttribute("colorStart", colorStart);
+    imesh.current.geometry.setAttribute("colorEnd", colorEnd);
 
     imesh.current.count = 0;
   }, [maxParticles]);
@@ -79,6 +89,16 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
       acceleration.needsUpdate = true;
       acceleration.updateRange.offset = playhead.current * 3;
       acceleration.updateRange.count = 3;
+
+      colorStart.setXYZW(playhead.current, 1, 1, 1, 1);
+      colorStart.needsUpdate = true;
+      colorStart.updateRange.offset = playhead.current * 4;
+      colorStart.updateRange.count = 4;
+
+      colorEnd.setXYZW(playhead.current, 1, 1, 1, 0);
+      colorEnd.needsUpdate = true;
+      colorEnd.updateRange.offset = playhead.current * 4;
+      colorEnd.updateRange.count = 4;
 
       /* Advance playhead */
       imesh.current.count++;
@@ -123,6 +143,7 @@ export const Instancicles: FC<{ maxParticles?: number }> = ({
         uniforms={uniforms}
         vertexShader={shader.vertexShader}
         fragmentShader={shader.fragmentShader}
+        transparent
       />
     </instancedMesh>
   );
