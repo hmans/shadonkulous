@@ -155,7 +155,7 @@ export const Instancicles: FC<{
       <CustomShaderMaterial
         ref={material}
         baseMaterial={MeshStandardMaterial}
-        color="cyan"
+        color="orange"
         uniforms={uniforms}
         vertexShader={shader.vertexShader}
         fragmentShader={shader.fragmentShader}
