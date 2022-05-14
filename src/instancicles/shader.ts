@@ -10,30 +10,34 @@ attribute vec4 colorEnd;
 
 varying float v_timeStart;
 varying float v_timeEnd;
+varying float v_lifetime;
+varying float v_age;
 varying vec4 v_colorStart;
 varying vec4 v_colorEnd;
 
 void main() {
-  float t = u_time - timeStart;
-
-  /* Apply velocity and acceleration */
-  vec3 offset = vec3(t * velocity + 0.5 * t * t * acceleration);
-
-  /* Fixes rotation, but not scaling, argh! */
-  offset *= mat3(instanceMatrix);
-  csm_Position += offset;
-
-  /* Pass varyings to fragment shader */
+  /* Set varyings */
   v_timeStart = timeStart;
   v_timeEnd = timeEnd;
   v_colorStart = colorStart;
   v_colorEnd = colorEnd;
+  v_age = u_time - v_timeStart;
+  v_lifetime = (u_time - v_timeStart) / (v_timeEnd - v_timeStart);
+
+  /* Apply velocity and acceleration */
+  vec3 offset = vec3(v_age * velocity + 0.5 * v_age * v_age * acceleration);
+
+  /* Fixes rotation, but not scaling, argh! */
+  offset *= mat3(instanceMatrix);
+  csm_Position += offset;
 }
 `;
 
 export const fragmentShader = /* glsl */ `
 uniform float u_time;
 
+varying float v_lifetime;
+varying float v_age;
 varying float v_timeStart;
 varying float v_timeEnd;
 varying vec4 v_colorStart;
@@ -44,6 +48,6 @@ void main() {
   if (u_time < v_timeStart || u_time > v_timeEnd) discard;
 
   vec4 colorDistance = v_colorEnd - v_colorStart;
-  csm_DiffuseColor = v_colorStart + colorDistance * (u_time - v_timeStart) / (v_timeEnd - v_timeStart);
+  csm_DiffuseColor = v_colorStart + colorDistance * v_lifetime;
 }
 `;
