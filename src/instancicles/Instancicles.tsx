@@ -28,12 +28,12 @@ export const Instancicles = () => {
 
     /* Add some extra attributes to the instanced mesh */
     imesh.current.geometry.setAttribute(
-      "positionStart",
-      new InstancedBufferAttribute(new Float32Array([-3, 0, 0]), 3)
+      "velocity",
+      new InstancedBufferAttribute(new Float32Array([+3, +4, 0]), 3)
     );
     imesh.current.geometry.setAttribute(
-      "positionEnd",
-      new InstancedBufferAttribute(new Float32Array([+3, 0, 0]), 3)
+      "acceleration",
+      new InstancedBufferAttribute(new Float32Array([0, -4, 0]), 3)
     );
   }, []);
 

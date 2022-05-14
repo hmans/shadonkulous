@@ -1,14 +1,13 @@
 export const vertexShader = /* glsl */ `
 uniform float u_time;
 
-attribute vec3 positionStart;
-attribute vec3 positionEnd;
+attribute vec3 velocity;
+attribute vec3 acceleration;
 
 void main() {
-  csm_Position += positionStart;
+  float t = u_time;
 
-  vec3 distance = positionEnd - positionStart;
-  csm_Position += distance * u_time;
+  csm_Position += t * velocity + 0.5 * t * t * acceleration;
 }
 `;
 
