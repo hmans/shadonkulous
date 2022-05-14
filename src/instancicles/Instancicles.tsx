@@ -149,11 +149,7 @@ export const Instancicles: FC<{
   });
 
   return (
-    <particles
-      ref={imesh}
-      args={[undefined, undefined, maxInstanceCount]}
-      position-y={8}
-    >
+    <particles ref={imesh} args={[maxParticles, safetySize]} position-y={8}>
       <boxGeometry />
       <CustomShaderMaterial
         ref={material}
